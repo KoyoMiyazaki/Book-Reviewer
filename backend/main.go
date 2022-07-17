@@ -1,7 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/KoyoMiyazaki/Book-Reviewer/db"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	if err := db.Init(); err != nil {
+		fmt.Println(err)
+	}
+	defer func() {
+		if err := db.Close(); err != nil {
+			fmt.Println(err)
+		}
+	}()
+
 }
