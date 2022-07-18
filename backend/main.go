@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/KoyoMiyazaki/Book-Reviewer/db"
+	"github.com/KoyoMiyazaki/Book-Reviewer/router"
 )
 
 func main() {
@@ -16,4 +17,7 @@ func main() {
 		}
 	}()
 
+	if err := router.Init(); err != nil {
+		fmt.Println(err)
+	}
 }
