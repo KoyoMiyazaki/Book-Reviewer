@@ -5,14 +5,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Ginサーバ初期設定、および起動
 func Init() error {
 	r := router()
 	return r.Run()
 }
 
+// Ginルータ設定
 func router() *gin.Engine {
 	r := gin.Default()
 
+	// 認証関連のルーティング
 	authRouter := r.Group("/auth")
 	{
 		controller := auth.Controller{}
