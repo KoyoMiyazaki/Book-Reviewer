@@ -17,9 +17,10 @@ type User entity.User
 type AuthResponse entity.AuthResponse
 type ResponseUser entity.ResponseUser
 
+// ユーザ登録コントローラ
 func (ctrl Controller) Register(c *gin.Context) {
 	var s auth.Service
-	newUser, err := s.Register(c)
+	newUser, statusCode, err := s.Register(c)
 
 	if err != nil {
 		response := AuthResponse{
@@ -27,18 +28,16 @@ func (ctrl Controller) Register(c *gin.Context) {
 			Error:  err.Error(),
 			Data:   entity.ResponseUser{},
 		}
-		c.JSON(http.StatusBadRequest, response)
-		fmt.Println(err)
+		c.JSON(int(statusCode), response)
 	} else {
-		token, err := s.GenerateJwtToken(newUser)
+		token, statusCode, err := s.GenerateJwtToken(newUser)
 		if err != nil {
 			response := AuthResponse{
 				Status: "error",
 				Error:  err.Error(),
 				Data:   entity.ResponseUser{},
 			}
-			c.JSON(http.StatusBadRequest, response)
-			fmt.Println(err)
+			c.JSON(int(statusCode), response)
 		} else {
 			responseUser := ResponseUser{
 				Name:  newUser.Name,
@@ -50,15 +49,16 @@ func (ctrl Controller) Register(c *gin.Context) {
 				Error:  "",
 				Data:   entity.ResponseUser(responseUser),
 			}
-			c.JSON(http.StatusOK, response)
+			c.JSON(http.StatusCreated, response)
 		}
 	}
 
 }
 
+// ログインコントローラ
 func (ctrl Controller) Login(c *gin.Context) {
 	var s auth.Service
-	user, err := s.Login(c)
+	user, statusCode, err := s.Login(c)
 
 	if err != nil {
 		response := AuthResponse{
@@ -66,18 +66,16 @@ func (ctrl Controller) Login(c *gin.Context) {
 			Error:  err.Error(),
 			Data:   entity.ResponseUser{},
 		}
-		c.JSON(http.StatusBadRequest, response)
-		fmt.Println(err)
+		c.JSON(int(statusCode), response)
 	} else {
-		token, err := s.GenerateJwtToken(user)
+		token, statusCode, err := s.GenerateJwtToken(user)
 		if err != nil {
 			response := AuthResponse{
 				Status: "error",
 				Error:  err.Error(),
 				Data:   entity.ResponseUser{},
 			}
-			c.JSON(http.StatusBadRequest, response)
-			fmt.Println(err)
+			c.JSON(int(statusCode), response)
 		} else {
 			responseUser := ResponseUser{
 				Name:  user.Name,
@@ -99,14 +97,14 @@ func (ctrl Controller) WhoAmI(c *gin.Context) {
 	authHeader := c.Request.Header.Get("Authorization")
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-	token, err := s.VerifyToken(tokenString)
+	token, statusCode, err := s.VerifyToken(tokenString)
 	if err != nil {
 		response := AuthResponse{
 			Status: "error",
 			Error:  err.Error(),
 			Data:   entity.ResponseUser{},
 		}
-		c.JSON(http.StatusBadRequest, response)
+		c.JSON(int(statusCode), response)
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
@@ -122,6 +120,6 @@ func (ctrl Controller) WhoAmI(c *gin.Context) {
 			Error:  err.Error(),
 			Data:   entity.ResponseUser{},
 		}
-		c.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusForbidden, response)
 	}
 }

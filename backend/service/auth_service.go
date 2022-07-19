@@ -3,7 +3,7 @@ package auth
 import (
 	"errors"
 	"fmt"
-	"log"
+	"net/http"
 	"os"
 	"time"
 
@@ -19,34 +19,36 @@ import (
 type Service struct{}
 
 type User entity.User
+type StatusCode int
 type RegisterRequest entity.RegisterRequest
 type LoginRequest entity.LoginRequest
 
-func (s Service) Register(c *gin.Context) (User, error) {
+// ユーザ登録サービス
+func (s Service) Register(c *gin.Context) (User, StatusCode, error) {
 	db := db.GetDB()
 	var request RegisterRequest
 	var validate *validator.Validate = validator.New()
 
 	// JSONリクエストデータを取得
 	if err := c.BindJSON(&request); err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
 	// リクエストデータのバリデーションチェック
 	if err := validate.Struct(request); err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
 	// パスワードの一致確認
 	if err := verifyPassword(request.Password, request.PasswordConfirmation); err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
 	// パスワードをハッシュ化
 	password := []byte(request.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(password, 10)
 	if err != nil {
-		return User{}, err
+		return User{}, http.StatusInternalServerError, err
 	}
 
 	newUser := User{
@@ -56,13 +58,14 @@ func (s Service) Register(c *gin.Context) (User, error) {
 	}
 
 	if err := db.Create(&newUser).Error; err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
-	return newUser, nil
+	return newUser, http.StatusCreated, nil
 }
 
-func (s Service) Login(c *gin.Context) (User, error) {
+// ログインサービス
+func (s Service) Login(c *gin.Context) (User, StatusCode, error) {
 	db := db.GetDB()
 	var user User
 	var request LoginRequest
@@ -70,32 +73,32 @@ func (s Service) Login(c *gin.Context) (User, error) {
 
 	// JSONリクエストデータを取得
 	if err := c.BindJSON(&request); err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
 	// リクエストデータのバリデーションチェック
 	if err := validate.Struct(request); err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
 	if err := db.Where("email = ?", request.Email).First(&user).Error; err != nil {
-		return User{}, err
+		return User{}, http.StatusNotFound, err
 	}
 
 	// 入力したパスワードと、DB上のパスワードを検証
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password))
 	if err != nil {
-		return User{}, err
+		return User{}, http.StatusBadRequest, err
 	}
 
-	return user, nil
+	return user, http.StatusOK, nil
 }
 
-func (s Service) GenerateJwtToken(user User) (string, error) {
+// JWTトークン生成サービス
+func (s Service) GenerateJwtToken(user User) (string, StatusCode, error) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
-		return "", err
+		return "", http.StatusInternalServerError, err
 	}
 	secretKey := os.Getenv("SECRET_KEY")
 
@@ -108,17 +111,17 @@ func (s Service) GenerateJwtToken(user User) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		return "", err
+		return "", http.StatusInternalServerError, err
 	}
 
-	return tokenString, nil
+	return tokenString, http.StatusOK, nil
 }
 
-func (s Service) VerifyToken(tokenString string) (*jwt.Token, error) {
+// JWTトークン検証サービス
+func (s Service) VerifyToken(tokenString string) (*jwt.Token, StatusCode, error) {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 	secretKey := os.Getenv("SECRET_KEY")
 
@@ -126,16 +129,17 @@ func (s Service) VerifyToken(tokenString string) (*jwt.Token, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-
 		return []byte(secretKey), nil
 	})
 
 	if err != nil {
-		return token, err
+		return token, http.StatusUnauthorized, err
 	}
-	return token, nil
+
+	return token, http.StatusOK, nil
 }
 
+// パスワード検証関数
 func verifyPassword(p1, p2 string) error {
 	if p1 != p2 {
 		return errors.New("Error: Passwords do not match")
