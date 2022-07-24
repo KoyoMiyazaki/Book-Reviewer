@@ -23,6 +23,7 @@ func router() *gin.Engine {
 		AllowOrigins: []string{"http://localhost:3000"},
 		AllowMethods: []string{"GET", "POST"},
 		AllowHeaders: []string{
+			"Authorization",
 			"Content-Type",
 		},
 		AllowCredentials: true,
