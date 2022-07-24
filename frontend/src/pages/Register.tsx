@@ -3,6 +3,8 @@ import { Button, Stack, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Title from "../components/Title";
+import { useAppDispatch } from "../util/hooks";
+import { login } from "../slices/authSlice";
 
 const Register = () => {
   const [inputValues, setInputValues] = useState({
@@ -12,6 +14,7 @@ const Register = () => {
     passwordConfirmation: "",
   });
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValues((prev) => {
@@ -32,6 +35,12 @@ const Register = () => {
       );
       const data = await res.data.data;
       localStorage.setItem("jwtToken", data.token);
+      dispatch(
+        login({
+          name: data.name,
+          email: data.email,
+        })
+      );
       navigate("/");
     } catch (error) {
       console.log(error);
