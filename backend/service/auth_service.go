@@ -1,4 +1,4 @@
-package auth
+package service
 
 import (
 	"errors"
@@ -16,10 +16,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Service struct{}
-
 type User entity.User
-type StatusCode int
 type RegisterRequest entity.RegisterRequest
 type LoginRequest entity.LoginRequest
 
