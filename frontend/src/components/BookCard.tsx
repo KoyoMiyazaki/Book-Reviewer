@@ -1,42 +1,53 @@
 import React from "react";
 import { Button, Paper, Stack, Typography } from "@mui/material";
 
-export interface BookCardProps {
+interface Book {
   title: string;
-  thumbnailLink: string;
   author: string;
   publishedDate: string;
+  thumbnailLink: string;
+}
+
+export interface BookCardProps extends Book {
+  setSelectedBook: React.Dispatch<React.SetStateAction<Book>>;
+  handleClickOpen: () => void;
 }
 
 const BookCard = ({
   title,
-  thumbnailLink,
   author,
   publishedDate,
+  thumbnailLink,
+  setSelectedBook,
+  handleClickOpen,
 }: BookCardProps) => {
   return (
-    <Paper elevation={3} sx={{ maxWidth: "500px", padding: "0.5rem" }}>
-      <Typography variant="body1" component="p" fontWeight={600}>
-        {title}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        著者: {author}
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        出版日: {publishedDate}
-      </Typography>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        sx={{ position: "relative" }}
-      >
-        <img src={thumbnailLink} alt={title} height={150} />
+    <Paper elevation={3} sx={{ maxWidth: "400px", padding: "0.5rem" }}>
+      <Stack direction="column" spacing={2}>
+        <Typography variant="body1" component="p" fontWeight={600}>
+          {title}
+        </Typography>
+        <Stack direction="row" spacing={2}>
+          <img src={thumbnailLink} alt={title} height={150} />
+          <Stack direction="column">
+            <Typography variant="body2" color="text.secondary">
+              著者: {author}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              出版日: {publishedDate}
+            </Typography>
+          </Stack>
+        </Stack>
         <Button
           variant="contained"
           color="success"
-          sx={{ height: "50px", position: "absolute", bottom: 0, right: 0 }}
+          onClick={() => {
+            setSelectedBook({ title, author, publishedDate, thumbnailLink });
+            handleClickOpen();
+          }}
+          sx={{ textTransform: "none" }}
         >
-          Review
+          Review This Book
         </Button>
       </Stack>
     </Paper>
