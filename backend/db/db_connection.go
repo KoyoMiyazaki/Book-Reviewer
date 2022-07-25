@@ -60,5 +60,14 @@ func GetDB() *gorm.DB {
 
 // マイグレーションを行う
 func autoMigrate() error {
-	return db.AutoMigrate(&entity.User{})
+	if err := db.AutoMigrate(&entity.User{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&entity.Book{}); err != nil {
+		return err
+	}
+	if err := db.AutoMigrate(&entity.Review{}); err != nil {
+		return err
+	}
+	return nil
 }
