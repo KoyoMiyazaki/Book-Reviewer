@@ -14,21 +14,22 @@ import {
 } from "@mui/material";
 import Title from "../components/Title";
 import { useAppSelector } from "../util/hooks";
+import { Book } from "../util/types";
 
 const SearchResult = () => {
   const location = useLocation();
   const searchWord = location.search.split("=")[1];
   const navigate = useNavigate();
   const [books, setBooks] = useState<any[]>([]);
-  const [selectedBook, setSelectedBook] = useState({
+  const [selectedBook, setSelectedBook] = useState<Book>({
     title: "",
     author: "",
-    publishedDate: "",
     thumbnailLink: "",
+    publishedDate: "",
   });
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [ratingValue, setRatingValue] = useState(3);
-  const [reviewComment, setReviewComment] = useState("");
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [ratingValue, setRatingValue] = useState<number>(3);
+  const [reviewComment, setReviewComment] = useState<string>("");
   const user = useAppSelector((state) => state.auth.user);
 
   const handleClickOpen = () => {
@@ -52,9 +53,13 @@ const SearchResult = () => {
       bookThumbnailLink: selectedBook.thumbnailLink,
       bookPublishedDate: selectedBook.publishedDate,
     };
-    console.log(postData);
+    const token: string | null = localStorage.getItem("jwtToken");
     try {
-      const res = await axios.post("http://localhost:8080/review/", postData);
+      const res = await axios.post("http://localhost:8080/review/", postData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       navigate("/");
     } catch (error) {
       console.log(error);
@@ -88,7 +93,7 @@ const SearchResult = () => {
             <Grid item xs={6}>
               <BookCard
                 title={bookInfo.title}
-                author={bookInfo.authors.join(", ")}
+                author={bookInfo.authors ? bookInfo.authors.join(", ") : ""}
                 publishedDate={bookInfo.publishedDate}
                 thumbnailLink={
                   bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : ""
