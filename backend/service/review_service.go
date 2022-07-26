@@ -2,16 +2,58 @@ package service
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/KoyoMiyazaki/Book-Reviewer/db"
 	"github.com/KoyoMiyazaki/Book-Reviewer/entity"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type Book entity.Book
 type Review entity.Review
 type CreateReviewRequest entity.CreateReviewRequest
+type ResponseReview entity.ResponseReview
+
+// レビュー取得サービス
+func (s Service) GetReviews(c *gin.Context) ([]ResponseReview, StatusCode, error) {
+	db := db.GetDB()
+	var user User
+	var results []ResponseReview
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return []ResponseReview{}, statusCode, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return []ResponseReview{}, http.StatusForbidden, err
+	}
+
+	// メールアドレスをキーに、ユーザを取得
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return []ResponseReview{}, http.StatusNotFound, err
+	}
+
+	// ユーザIDをキーに、レビューを取得
+	if err := db.Model(&Review{}).Select("reviews.comment, reviews.rating, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Scan(&results).Error; err != nil {
+		// SELECT reviews.comment, reviews.rating, books.title as book_title,
+		//   books.author as book_author, books.thumbnail_link as book_thumbnail_link,
+		//   books.published_date as book_published_date
+		// FROM `reviews` join `books` on reviews.book_id = books.id
+		// WHERE reviews.user_id = user.ID
+		return []ResponseReview{}, http.StatusNotFound, err
+	}
+
+	return results, http.StatusOK, nil
+}
 
 // レビュー登録用サービス
 func (s Service) CreateReview(c *gin.Context) (Review, StatusCode, error) {
