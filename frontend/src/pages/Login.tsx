@@ -5,9 +5,10 @@ import axios from "axios";
 import Title from "../components/Title";
 import { useAppDispatch } from "../util/hooks";
 import { login } from "../slices/authSlice";
+import { LoginInput } from "../util/types";
 
 const Login = () => {
-  const [inputValues, setInputValues] = useState({
+  const [inputValues, setInputValues] = useState<LoginInput>({
     email: "",
     password: "",
   });

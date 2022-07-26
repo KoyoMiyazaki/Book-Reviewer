@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   AppBar,
-  Box,
   Button,
   IconButton,
   InputBase,
@@ -25,7 +24,7 @@ const Navbar = () => {
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
 
-  const [searchWord, setSearchWord] = useState("");
+  const [searchWord, setSearchWord] = useState<string>("");
   const navigate = useNavigate();
 
   const handleSearchWordInput = (

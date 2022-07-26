@@ -3,9 +3,10 @@ import { Grid, Stack } from "@mui/material";
 import Title from "../components/Title";
 import axios from "axios";
 import ReviewCard from "../components/ReviewCard";
+import { Review } from "../util/types";
 
 const Home = () => {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   const getReviews = async () => {
     const token: string | null = localStorage.getItem("jwtToken");
@@ -16,7 +17,7 @@ const Home = () => {
         },
       });
       const data = await res.data.data;
-      setReviews(data);
+      setReviews(data ? data : []);
     } catch (error) {
       console.log(error);
     }
@@ -30,7 +31,7 @@ const Home = () => {
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
       <Title title="Your Review" />
       <Grid container spacing={2} marginTop="1rem">
-        {reviews.map((review: any) => {
+        {reviews.map((review) => {
           return (
             <Grid item xs={6}>
               <ReviewCard
