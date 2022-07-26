@@ -31,18 +31,19 @@ func router() *gin.Engine {
 	}))
 
 	controller := controller.Controller{}
+	// レビュー関連のルーティング
+	reviewRouter := r.Group("/review")
+	{
+		reviewRouter.GET("/", controller.GetReviews)
+		reviewRouter.POST("/", controller.CreateReview)
+	}
+
 	// 認証関連のルーティング
 	authRouter := r.Group("/auth")
 	{
 		authRouter.POST("/register", controller.Register)
 		authRouter.POST("/login", controller.Login)
 		authRouter.GET("/whoami", controller.WhoAmI)
-	}
-
-	// レビュー関連のルーティング
-	reviewRouter := r.Group("/review")
-	{
-		reviewRouter.POST("/", controller.CreateReview)
 	}
 
 	return r
