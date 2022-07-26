@@ -1,23 +1,12 @@
 import React from "react";
 import { Button, Paper, Stack, Typography } from "@mui/material";
-
-interface Book {
-  title: string;
-  author: string;
-  publishedDate: string;
-  thumbnailLink: string;
-}
-
-export interface BookCardProps extends Book {
-  setSelectedBook: React.Dispatch<React.SetStateAction<Book>>;
-  handleClickOpen: () => void;
-}
+import { BookCardProps } from "../util/types";
 
 const BookCard = ({
   title,
   author,
-  publishedDate,
   thumbnailLink,
+  publishedDate,
   setSelectedBook,
   handleClickOpen,
 }: BookCardProps) => {

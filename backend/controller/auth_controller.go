@@ -23,7 +23,7 @@ func (ctrl Controller) Register(c *gin.Context) {
 		response := Response{
 			Status: "error",
 			Error:  err.Error(),
-			Data:   entity.ResponseUser{},
+			Data:   ResponseUser{},
 		}
 		c.JSON(int(statusCode), response)
 	} else {
@@ -32,7 +32,7 @@ func (ctrl Controller) Register(c *gin.Context) {
 			response := Response{
 				Status: "error",
 				Error:  err.Error(),
-				Data:   entity.ResponseUser{},
+				Data:   ResponseUser{},
 			}
 			c.JSON(int(statusCode), response)
 		} else {
@@ -44,7 +44,7 @@ func (ctrl Controller) Register(c *gin.Context) {
 			response := Response{
 				Status: "success",
 				Error:  "",
-				Data:   entity.ResponseUser(responseUser),
+				Data:   responseUser,
 			}
 			c.JSON(http.StatusCreated, response)
 		}
@@ -61,7 +61,7 @@ func (ctrl Controller) Login(c *gin.Context) {
 		response := Response{
 			Status: "error",
 			Error:  err.Error(),
-			Data:   entity.ResponseUser{},
+			Data:   ResponseUser{},
 		}
 		c.JSON(int(statusCode), response)
 	} else {
@@ -70,7 +70,7 @@ func (ctrl Controller) Login(c *gin.Context) {
 			response := Response{
 				Status: "error",
 				Error:  err.Error(),
-				Data:   entity.ResponseUser{},
+				Data:   ResponseUser{},
 			}
 			c.JSON(int(statusCode), response)
 		} else {
@@ -82,7 +82,7 @@ func (ctrl Controller) Login(c *gin.Context) {
 			response := Response{
 				Status: "success",
 				Error:  "",
-				Data:   entity.ResponseUser(responseUser),
+				Data:   responseUser,
 			}
 			c.JSON(http.StatusOK, response)
 		}
@@ -99,7 +99,7 @@ func (ctrl Controller) WhoAmI(c *gin.Context) {
 		response := Response{
 			Status: "error",
 			Error:  err.Error(),
-			Data:   entity.ResponseUser{},
+			Data:   ResponseUser{},
 		}
 		c.JSON(int(statusCode), response)
 	}
@@ -115,7 +115,7 @@ func (ctrl Controller) WhoAmI(c *gin.Context) {
 		response := Response{
 			Status: "error",
 			Error:  err.Error(),
-			Data:   entity.ResponseUser{},
+			Data:   ResponseUser{},
 		}
 		c.JSON(http.StatusForbidden, response)
 	}

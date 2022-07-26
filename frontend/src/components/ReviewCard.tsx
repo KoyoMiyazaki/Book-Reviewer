@@ -1,14 +1,6 @@
-import { Paper, Rating, Stack, Typography } from "@mui/material";
 import React from "react";
-
-export interface ReviewCardProps {
-  comment: string;
-  rating: number;
-  bookTitle: string;
-  bookAuthor: string;
-  bookThumbnailLink: string;
-  bookPublishedDate: string;
-}
+import { Paper, Rating, Stack, Typography } from "@mui/material";
+import { ReviewCardProps } from "../util/types";
 
 const ReviewCard = ({
   comment,

@@ -17,7 +17,6 @@ type Review struct {
 type CreateReviewRequest struct {
 	Comment           string `json:"comment" validate:"required"`
 	Rating            uint8  `json:"rating" validate:"required"`
-	UserEmail         string `json:"userEmail" validate:"required"`
 	BookTitle         string `json:"bookTitle" validate:"required"`
 	BookAuthor        string `json:"bookAuthor" validate:"required"`
 	BookThumbnailLink string `json:"bookThumbnailLink"`

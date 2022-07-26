@@ -1,9 +1,6 @@
-import { Typography } from "@mui/material";
 import React from "react";
-
-export interface TitleProps {
-  title: string;
-}
+import { Typography } from "@mui/material";
+import { TitleProps } from "../util/types";
 
 const Title = ({ title }: TitleProps) => {
   return (
