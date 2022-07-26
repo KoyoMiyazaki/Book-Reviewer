@@ -45,14 +45,10 @@ func (ctrl Controller) CreateReview(c *gin.Context) {
 		}
 		c.JSON(int(statusCode), response)
 	} else {
-		responseReview := ResponseReview{
-			Comment: newReview.Comment,
-			Rating:  newReview.Rating,
-		}
 		response := Response{
 			Status: "success",
 			Error:  "",
-			Data:   entity.ResponseReview(responseReview),
+			Data:   newReview,
 		}
 		c.JSON(http.StatusCreated, response)
 	}
