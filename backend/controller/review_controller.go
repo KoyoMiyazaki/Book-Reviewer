@@ -10,6 +10,28 @@ import (
 
 type ResponseReview entity.ResponseReview
 
+// レビュー取得コントローラ
+func (ctrl Controller) GetReviews(c *gin.Context) {
+	var s service.Service
+	reviews, statusCode, err := s.GetReviews(c)
+
+	if err != nil {
+		response := Response{
+			Status: "error",
+			Error:  err.Error(),
+			Data:   []ResponseReview{},
+		}
+		c.JSON(int(statusCode), response)
+	} else {
+		response := Response{
+			Status: "success",
+			Error:  "",
+			Data:   reviews,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 // レビュー登録コントローラ
 func (ctrl Controller) CreateReview(c *gin.Context) {
 	var s service.Service
@@ -19,7 +41,7 @@ func (ctrl Controller) CreateReview(c *gin.Context) {
 		response := Response{
 			Status: "error",
 			Error:  err.Error(),
-			Data:   entity.ResponseReview{},
+			Data:   ResponseReview{},
 		}
 		c.JSON(int(statusCode), response)
 	} else {
