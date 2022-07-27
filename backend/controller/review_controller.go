@@ -53,3 +53,25 @@ func (ctrl Controller) CreateReview(c *gin.Context) {
 		c.JSON(http.StatusCreated, response)
 	}
 }
+
+// レビュー削除コントローラ
+func (ctrl Controller) DeleteReview(c *gin.Context) {
+	var s service.Service
+	statusCode, err := s.DeleteReview(c)
+
+	if err != nil {
+		response := Response{
+			Status: "error",
+			Error:  err.Error(),
+			Data:   ResponseReview{},
+		}
+		c.JSON(int(statusCode), response)
+	} else {
+		response := Response{
+			Status: "success",
+			Error:  "",
+			Data:   "deleted successfully",
+		}
+		c.JSON(http.StatusCreated, response)
+	}
+}
