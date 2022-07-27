@@ -146,7 +146,7 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		return ResponseReview{}, statusCode, err
 	}
 
-	_, ok := token.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
 		return ResponseReview{}, http.StatusForbidden, err
@@ -169,10 +169,23 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		return ResponseReview{}, http.StatusNotFound, err
 	}
 
+	// メールアドレスをキーに、ユーザを取得
+	var user User
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return ResponseReview{}, http.StatusNotFound, err
+	}
+
+	// 更新対象レビューのユーザIDと、ログインユーザIDが一致していなければ更新しない
+	if review.UserID != user.ID {
+		return ResponseReview{}, http.StatusForbidden, fmt.Errorf("couldn't update this review")
+	}
+
 	// レビューを更新
 	review.Comment = request.Comment
 	review.Rating = request.Rating
-	db.Save(&review)
+	if err := db.Save(&review).Error; err != nil {
+		return ResponseReview{}, http.StatusInternalServerError, err
+	}
 
 	// IDをキーに、書籍を取得
 	var book Book
