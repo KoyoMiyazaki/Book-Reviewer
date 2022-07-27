@@ -36,6 +36,7 @@ func router() *gin.Engine {
 	{
 		reviewRouter.GET("/", controller.GetReviews)
 		reviewRouter.POST("/", controller.CreateReview)
+		reviewRouter.PATCH("/:id", controller.UpdateReview)
 		reviewRouter.DELETE("/:id", controller.DeleteReview)
 	}
 
