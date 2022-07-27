@@ -14,6 +14,7 @@ import (
 type Book entity.Book
 type Review entity.Review
 type CreateReviewRequest entity.CreateReviewRequest
+type UpdateReviewRequest entity.UpdateReviewRequest
 type ResponseReview entity.ResponseReview
 
 // レビュー取得サービス
@@ -127,6 +128,68 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	}
 
 	return responseReview, http.StatusCreated, nil
+}
+
+// レビュー更新用サービス
+func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error) {
+	db := db.GetDB()
+	var request UpdateReviewRequest
+	var validate *validator.Validate = validator.New()
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return ResponseReview{}, statusCode, err
+	}
+
+	_, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return ResponseReview{}, http.StatusForbidden, err
+	}
+
+	// JSONリクエストデータを取得
+	if err := c.BindJSON(&request); err != nil {
+		return ResponseReview{}, http.StatusBadRequest, err
+	}
+
+	// リクエストデータのバリデーションチェック
+	if err := validate.Struct(request); err != nil {
+		return ResponseReview{}, http.StatusBadRequest, err
+	}
+
+	// IDをキーに、レビューを取得
+	id := c.Param("id")
+	var review Review
+	if err := db.Where("id = ?", id).First(&review).Error; err != nil {
+		return ResponseReview{}, http.StatusNotFound, err
+	}
+
+	// レビューを更新
+	review.Comment = request.Comment
+	review.Rating = request.Rating
+	db.Save(&review)
+
+	// IDをキーに、書籍を取得
+	var book Book
+	if err := db.Where("id = ?", review.BookID).First(&book).Error; err != nil {
+		return ResponseReview{}, http.StatusNotFound, err
+	}
+
+	// レスポンス用データ生成
+	responseReview := ResponseReview{
+		Comment:           review.Comment,
+		Rating:            review.Rating,
+		BookTitle:         book.Title,
+		BookAuthor:        book.Author,
+		BookThumbnailLink: book.ThumbnailLink,
+		BookPublishedDate: book.PublishedDate,
+	}
+
+	return responseReview, http.StatusOK, nil
 }
 
 // レビュー削除用サービス

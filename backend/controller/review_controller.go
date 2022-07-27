@@ -54,6 +54,28 @@ func (ctrl Controller) CreateReview(c *gin.Context) {
 	}
 }
 
+// レビュー更新コントローラ
+func (ctrl Controller) UpdateReview(c *gin.Context) {
+	var s service.Service
+	updatedReview, statusCode, err := s.UpdateReview(c)
+
+	if err != nil {
+		response := Response{
+			Status: "error",
+			Error:  err.Error(),
+			Data:   ResponseReview{},
+		}
+		c.JSON(int(statusCode), response)
+	} else {
+		response := Response{
+			Status: "success",
+			Error:  "",
+			Data:   updatedReview,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 // レビュー削除コントローラ
 func (ctrl Controller) DeleteReview(c *gin.Context) {
 	var s service.Service
