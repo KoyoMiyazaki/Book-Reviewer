@@ -94,6 +94,6 @@ func (ctrl Controller) DeleteReview(c *gin.Context) {
 			Error:  "",
 			Data:   "deleted successfully",
 		}
-		c.JSON(http.StatusCreated, response)
+		c.JSON(http.StatusOK, response)
 	}
 }
