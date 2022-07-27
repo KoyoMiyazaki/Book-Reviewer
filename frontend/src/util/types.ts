@@ -6,6 +6,7 @@ export interface Book {
 }
 
 export interface Review {
+  id: number;
   comment: string;
   rating: number;
   bookTitle: string;
@@ -32,12 +33,15 @@ export interface BookCardProps extends Book {
 }
 
 export interface ReviewCardProps {
+  id: number;
   comment: string;
   rating: number;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
   bookPublishedDate: string;
+  setSelectedReview: React.Dispatch<React.SetStateAction<Review>>;
+  handleClickOpen: () => void;
 }
 
 export interface TitleProps {
