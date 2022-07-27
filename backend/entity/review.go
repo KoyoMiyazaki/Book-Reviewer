@@ -25,6 +25,7 @@ type CreateReviewRequest struct {
 
 // レスポンス用レビュー構造体
 type ResponseReview struct {
+	ID                uint   `json:"id"`
 	Comment           string `json:"comment"`
 	Rating            uint8  `json:"rating"`
 	BookTitle         string `json:"bookTitle"`
