@@ -36,6 +36,7 @@ func router() *gin.Engine {
 	{
 		reviewRouter.GET("/", controller.GetReviews)
 		reviewRouter.POST("/", controller.CreateReview)
+		reviewRouter.DELETE("/:id", controller.DeleteReview)
 	}
 
 	// 認証関連のルーティング
