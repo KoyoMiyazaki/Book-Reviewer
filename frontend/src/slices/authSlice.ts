@@ -23,6 +23,7 @@ export const authSlice = createSlice({
     },
     logout: (state) => {
       state.user = null;
+      localStorage.removeItem("jwtToken");
     },
   },
 });
