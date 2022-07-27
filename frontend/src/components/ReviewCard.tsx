@@ -1,14 +1,17 @@
 import React from "react";
-import { Paper, Rating, Stack, Typography } from "@mui/material";
+import { Button, Paper, Rating, Stack, Typography } from "@mui/material";
 import { ReviewCardProps } from "../util/types";
 
 const ReviewCard = ({
+  id,
   comment,
   rating,
   bookTitle,
   bookAuthor,
   bookThumbnailLink,
   bookPublishedDate,
+  setSelectedReview,
+  handleClickOpen,
 }: ReviewCardProps) => {
   return (
     <Paper elevation={3} sx={{ maxWidth: "400px", padding: "0.5rem" }}>
@@ -42,17 +45,25 @@ const ReviewCard = ({
             </Typography>
           </Stack>
         </Stack>
-        {/* <Button
+        <Button
           variant="contained"
           color="success"
           onClick={() => {
-            setSelectedBook({ title, author, publishedDate, thumbnailLink });
+            setSelectedReview({
+              id,
+              comment,
+              rating,
+              bookTitle,
+              bookAuthor,
+              bookThumbnailLink,
+              bookPublishedDate,
+            });
             handleClickOpen();
           }}
           sx={{ textTransform: "none" }}
         >
-          Review This Book
-        </Button> */}
+          Show Review
+        </Button>
       </Stack>
     </Paper>
   );
