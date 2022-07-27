@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -205,17 +206,32 @@ func (s Service) DeleteReview(c *gin.Context) (StatusCode, error) {
 		return statusCode, err
 	}
 
-	_, ok := token.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
 		return http.StatusForbidden, err
 	}
 
+	// IDをキーに、レビューを取得
 	id := c.Param("id")
 	var review Review
-	// IDをキーに、レビューを削除
-	if err := db.Where("id = ?", id).Delete(&review).Error; err != nil {
+	if err := db.Where("id = ?", id).First(&review).Error; err != nil {
 		return http.StatusNotFound, err
+	}
+
+	// メールアドレスをキーに、ユーザを取得
+	var user User
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return http.StatusNotFound, err
+	}
+
+	// 削除対象レビューのユーザIDと、ログインユーザIDが一致していなければ削除しない
+	if review.UserID != user.ID {
+		return http.StatusForbidden, fmt.Errorf("couldn't delete this review")
+	}
+
+	if err := db.Delete(&review).Error; err != nil {
+		return http.StatusInternalServerError, err
 	}
 
 	return http.StatusOK, nil
