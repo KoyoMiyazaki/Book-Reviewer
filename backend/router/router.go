@@ -21,7 +21,7 @@ func router() *gin.Engine {
 	// CORS設定
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:3000"},
-		AllowMethods: []string{"GET", "POST"},
+		AllowMethods: []string{"GET", "POST", "PATCH", "DELETE"},
 		AllowHeaders: []string{
 			"Authorization",
 			"Content-Type",
