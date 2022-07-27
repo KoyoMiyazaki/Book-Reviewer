@@ -13,6 +13,11 @@ const ReviewCard = ({
   setSelectedReview,
   handleClickOpen,
 }: ReviewCardProps) => {
+  // 20文字以下のコメントはそのままで、それより多いコメントは最初の20文字と3点リーダーを返却
+  const shortenComment = (comment: string): string => {
+    return comment.length <= 20 ? comment : `${comment.slice(0, 20)}...`;
+  };
+
   return (
     <Paper elevation={3} sx={{ maxWidth: "400px", padding: "0.5rem" }}>
       <Stack direction="column" spacing={2}>
@@ -41,7 +46,7 @@ const ReviewCard = ({
               レビュー:
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {comment}
+              {shortenComment(comment)}
             </Typography>
           </Stack>
         </Stack>
