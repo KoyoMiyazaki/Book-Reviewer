@@ -71,6 +71,8 @@ const Navbar = () => {
                 display: { md: "none" },
               }}
               aria-label="search"
+              component={Link}
+              to="/"
             >
               <Home />
             </IconButton>
