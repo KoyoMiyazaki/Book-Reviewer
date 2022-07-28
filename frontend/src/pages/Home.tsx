@@ -109,7 +109,7 @@ const Home = () => {
           <Grid container spacing={2} marginTop="1rem">
             {reviews.map((review) => {
               return (
-                <Grid item xs={6} key={review.id}>
+                <Grid item xs={12} sm={6} key={review.id}>
                   <ReviewCard
                     id={review.id}
                     comment={review.comment}

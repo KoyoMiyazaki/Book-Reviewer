@@ -90,7 +90,7 @@ const SearchResult = () => {
         {books.map((book) => {
           const bookInfo = book.volumeInfo;
           return (
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={6}>
               <BookCard
                 title={bookInfo.title}
                 author={bookInfo.authors ? bookInfo.authors.join(", ") : ""}

@@ -11,7 +11,10 @@ const BookCard = ({
   handleClickOpen,
 }: BookCardProps) => {
   return (
-    <Paper elevation={3} sx={{ maxWidth: "400px", padding: "0.5rem" }}>
+    <Paper
+      elevation={3}
+      sx={{ maxWidth: { md: "400px", xs: "100%" }, padding: "0.5rem" }}
+    >
       <Stack direction="column" spacing={2}>
         <Typography variant="body1" component="p" fontWeight={600}>
           {title}
