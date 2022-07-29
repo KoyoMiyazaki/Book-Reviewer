@@ -67,13 +67,27 @@ const SearchResult = () => {
   };
 
   const getBooksData = async () => {
-    //   https://developers.google.com/books/docs/v1/reference/volumes/list
     try {
-      const res = await axios.get(
-        `https://www.googleapis.com/books/v1/volumes?q=${searchWord}`
-      );
+      let res;
+      if (!user) {
+        res = await axios.get(`http://localhost:8080/book/`, {
+          params: {
+            search: searchWord,
+          },
+        });
+      } else {
+        const token: string | null = localStorage.getItem("jwtToken");
+        res = await axios.get(`http://localhost:8080/book/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            search: searchWord,
+          },
+        });
+      }
       const data = await res.data;
-      setBooks(data.items);
+      setBooks(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -88,16 +102,14 @@ const SearchResult = () => {
       <Title title="Search Result" />
       <Grid container spacing={2} marginTop="1rem">
         {books.map((book) => {
-          const bookInfo = book.volumeInfo;
           return (
-            <Grid item xs={12} sm={6}>
+            <Grid item key={book.id} xs={12} sm={6}>
               <BookCard
-                title={bookInfo.title}
-                author={bookInfo.authors ? bookInfo.authors.join(", ") : ""}
-                publishedDate={bookInfo.publishedDate}
-                thumbnailLink={
-                  bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : ""
-                }
+                title={book.title}
+                author={book.author}
+                thumbnailLink={book.thumbnailLink}
+                publishedDate={book.publishedDate}
+                isReviewed={book.isReviewed}
                 setSelectedBook={setSelectedBook}
                 handleClickOpen={handleClickOpen}
               />
