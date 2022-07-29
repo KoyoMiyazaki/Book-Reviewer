@@ -7,6 +7,7 @@ const BookCard = ({
   author,
   thumbnailLink,
   publishedDate,
+  isReviewed,
   setSelectedBook,
   handleClickOpen,
 }: BookCardProps) => {
@@ -30,17 +31,23 @@ const BookCard = ({
             </Typography>
           </Stack>
         </Stack>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={() => {
-            setSelectedBook({ title, author, publishedDate, thumbnailLink });
-            handleClickOpen();
-          }}
-          sx={{ textTransform: "none" }}
-        >
-          Review This Book
-        </Button>
+        {isReviewed ? (
+          <Button variant="contained" disabled>
+            Already reviewed
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => {
+              setSelectedBook({ title, author, publishedDate, thumbnailLink });
+              handleClickOpen();
+            }}
+            sx={{ textTransform: "none" }}
+          >
+            Review This Book
+          </Button>
+        )}
       </Stack>
     </Paper>
   );
