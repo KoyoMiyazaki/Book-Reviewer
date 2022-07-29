@@ -40,6 +40,13 @@ func router() *gin.Engine {
 		reviewRouter.DELETE("/:id", controller.DeleteReview)
 	}
 
+	// 書籍関連のルーティング
+	bookRouter := r.Group("/book")
+	{
+		// /book?search=[検索ワード]
+		bookRouter.GET("/", controller.SearchBooks)
+	}
+
 	// 認証関連のルーティング
 	authRouter := r.Group("/auth")
 	{
