@@ -28,6 +28,7 @@ export interface RegisterInput {
 }
 
 export interface BookCardProps extends Book {
+  isReviewed: boolean;
   setSelectedBook: React.Dispatch<React.SetStateAction<Book>>;
   handleClickOpen: () => void;
 }
