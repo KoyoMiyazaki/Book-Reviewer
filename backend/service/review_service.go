@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/KoyoMiyazaki/Book-Reviewer/db"
@@ -16,13 +17,14 @@ type Book entity.Book
 type Review entity.Review
 type CreateReviewRequest entity.CreateReviewRequest
 type UpdateReviewRequest entity.UpdateReviewRequest
+type GetReviewsResponse entity.GetReviewsResponse
 type ResponseReview entity.ResponseReview
 
 // レビュー取得サービス
-func (s Service) GetReviews(c *gin.Context) ([]ResponseReview, StatusCode, error) {
+func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, error) {
 	db := db.GetDB()
 	var user User
-	var results []ResponseReview
+	var results []entity.ResponseReview
 
 	// JWTトークン検証
 	authHeader := c.Request.Header.Get("Authorization")
@@ -30,32 +32,59 @@ func (s Service) GetReviews(c *gin.Context) ([]ResponseReview, StatusCode, error
 
 	token, statusCode, err := s.VerifyToken(tokenString)
 	if err != nil {
-		return []ResponseReview{}, statusCode, err
+		return GetReviewsResponse{}, statusCode, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok || !token.Valid {
-		return []ResponseReview{}, http.StatusForbidden, err
+		return GetReviewsResponse{}, http.StatusForbidden, err
 	}
 
 	// メールアドレスをキーに、ユーザを取得
 	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
-		return []ResponseReview{}, http.StatusNotFound, err
+		return GetReviewsResponse{}, http.StatusNotFound, err
+	}
+
+	// ページパラメータ取得、指定されてない場合は1を設定
+	var page int
+	if c.Query("page") == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(c.Query("page"))
+		if err != nil {
+			return GetReviewsResponse{}, http.StatusBadRequest, err
+		}
 	}
 
 	// ユーザIDをキーに、レビューを取得
-	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Scan(&results).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
 		// SELECT reviews.id, reviews.comment, reviews.rating, books.title as book_title,
 		//   books.author as book_author, books.thumbnail_link as book_thumbnail_link,
 		//   books.published_date as book_published_date
 		// FROM `reviews` join `books` on reviews.book_id = books.id
 		// WHERE reviews.user_id = user.ID
 		// ORDER BY reviews.updated_at DESC
-		return []ResponseReview{}, http.StatusNotFound, err
+		// LIMIT 10 OFFSET [10 * (page-1)]
+		return GetReviewsResponse{}, http.StatusNotFound, err
 	}
 
-	return results, http.StatusOK, nil
+	// レビューの総件数を取得
+	var totalRows int64
+	if err := db.Model(&Review{}).Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Count(&totalRows).Error; err != nil {
+		// SELECT count(1)
+		// FROM `reviews` join `books` on reviews.book_id = books.id
+		// WHERE reviews.user_id = user.ID
+		return GetReviewsResponse{}, http.StatusNotFound, err
+	}
+
+	// レスポンス用データ生成
+	getReviewsResponse := GetReviewsResponse{
+		ResponseReviews: results,
+		TotalPages:      totalRows/10 + 1,
+	}
+
+	return getReviewsResponse, http.StatusOK, nil
 }
 
 // レビュー登録用サービス
