@@ -10,6 +10,7 @@ const ReviewCard = ({
   bookAuthor,
   bookThumbnailLink,
   bookPublishedDate,
+  bookNumOfPages,
   setSelectedReview,
   handleClickOpen,
 }: ReviewCardProps) => {
@@ -36,6 +37,9 @@ const ReviewCard = ({
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 出版日: {bookPublishedDate}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ページ数: {bookNumOfPages}
               </Typography>
             </Box>
             <Box>
@@ -67,6 +71,7 @@ const ReviewCard = ({
               bookAuthor,
               bookThumbnailLink,
               bookPublishedDate,
+              bookNumOfPages,
             });
             handleClickOpen();
           }}

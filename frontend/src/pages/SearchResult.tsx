@@ -26,6 +26,7 @@ const SearchResult = () => {
     author: "",
     thumbnailLink: "",
     publishedDate: "",
+    numOfPages: 0,
   });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(3);
@@ -52,6 +53,7 @@ const SearchResult = () => {
       bookAuthor: selectedBook.author,
       bookThumbnailLink: selectedBook.thumbnailLink,
       bookPublishedDate: selectedBook.publishedDate,
+      bookNumOfPages: selectedBook.numOfPages,
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
@@ -109,6 +111,7 @@ const SearchResult = () => {
                 author={book.author}
                 thumbnailLink={book.thumbnailLink}
                 publishedDate={book.publishedDate}
+                numOfPages={book.numOfPages}
                 isReviewed={book.isReviewed}
                 setSelectedBook={setSelectedBook}
                 handleClickOpen={handleClickOpen}

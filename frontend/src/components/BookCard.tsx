@@ -7,6 +7,7 @@ const BookCard = ({
   author,
   thumbnailLink,
   publishedDate,
+  numOfPages,
   isReviewed,
   setSelectedBook,
   handleClickOpen,
@@ -29,6 +30,9 @@ const BookCard = ({
             <Typography variant="body2" color="text.secondary">
               出版日: {publishedDate}
             </Typography>
+            <Typography variant="body2" color="text.secondary">
+              ページ数: {numOfPages}
+            </Typography>
           </Stack>
         </Stack>
         {isReviewed ? (
@@ -40,7 +44,13 @@ const BookCard = ({
             variant="outlined"
             color="success"
             onClick={() => {
-              setSelectedBook({ title, author, publishedDate, thumbnailLink });
+              setSelectedBook({
+                title,
+                author,
+                thumbnailLink,
+                publishedDate,
+                numOfPages,
+              });
               handleClickOpen();
             }}
             sx={{ textTransform: "none" }}

@@ -26,6 +26,7 @@ const Home = () => {
     bookAuthor: "",
     bookThumbnailLink: "",
     bookPublishedDate: "",
+    bookNumOfPages: 0,
   });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -126,6 +127,7 @@ const Home = () => {
                       bookAuthor={review.bookAuthor}
                       bookThumbnailLink={review.bookThumbnailLink}
                       bookPublishedDate={review.bookPublishedDate}
+                      bookNumOfPages={review.bookNumOfPages}
                       setSelectedReview={setSelectedReview}
                       handleClickOpen={handleClickOpen}
                     />
