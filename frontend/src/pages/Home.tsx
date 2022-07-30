@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogActions,
   Grid,
+  Pagination,
   Rating,
   Stack,
   TextField,
@@ -27,6 +28,8 @@ const Home = () => {
     bookPublishedDate: "",
   });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const user = useAppSelector((state) => state.auth.user);
 
   const getReviews = async () => {
@@ -36,9 +39,13 @@ const Home = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          page: currentPage,
+        },
       });
-      const data = await res.data.data;
-      setReviews(data ? data : []);
+      const { items, totalPages } = await res.data.data;
+      setReviews(items ? items : []);
+      setTotalPages(totalPages ? totalPages : 1);
     } catch (error) {
       console.log(error);
     }
@@ -87,7 +94,7 @@ const Home = () => {
 
   useEffect(() => {
     getReviews();
-  }, []);
+  }, [currentPage]);
 
   const handleClickOpen = () => {
     setDialogOpen(true);
@@ -105,27 +112,39 @@ const Home = () => {
         <Title title="Let's search books you want to review!" />
       ) : (
         <>
-          <Title title="Your Review" />
-          <Grid container spacing={2} marginTop="1rem">
-            {reviews.map((review) => {
-              return (
-                <Grid item xs={12} sm={6} key={review.id}>
-                  <ReviewCard
-                    id={review.id}
-                    comment={review.comment}
-                    rating={review.rating}
-                    bookTitle={review.bookTitle}
-                    bookAuthor={review.bookAuthor}
-                    bookThumbnailLink={review.bookThumbnailLink}
-                    bookPublishedDate={review.bookPublishedDate}
-                    setSelectedReview={setSelectedReview}
-                    handleClickOpen={handleClickOpen}
-                  />
-                </Grid>
-              );
-            })}
-          </Grid>
-
+          <Stack direction="column" spacing={2}>
+            <Title title="Your Review" />
+            <Grid container spacing={2} marginTop="1rem">
+              {reviews.map((review) => {
+                return (
+                  <Grid item xs={12} sm={6} key={review.id}>
+                    <ReviewCard
+                      id={review.id}
+                      comment={review.comment}
+                      rating={review.rating}
+                      bookTitle={review.bookTitle}
+                      bookAuthor={review.bookAuthor}
+                      bookThumbnailLink={review.bookThumbnailLink}
+                      bookPublishedDate={review.bookPublishedDate}
+                      setSelectedReview={setSelectedReview}
+                      handleClickOpen={handleClickOpen}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+            {/* ページネーション */}
+            <Pagination
+              count={totalPages}
+              size="large"
+              variant="outlined"
+              color="primary"
+              sx={{ "& .MuiPagination-ul": { justifyContent: "center" } }}
+              onChange={(event, page) => {
+                setCurrentPage(page);
+              }}
+            />
+          </Stack>
           {/* ダイアログ */}
           <Dialog
             open={dialogOpen}
