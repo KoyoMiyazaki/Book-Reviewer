@@ -3,6 +3,7 @@ export interface Book {
   author: string;
   thumbnailLink: string;
   publishedDate: string;
+  numOfPages: number;
 }
 
 export interface Review {
@@ -13,6 +14,7 @@ export interface Review {
   bookAuthor: string;
   bookThumbnailLink: string;
   bookPublishedDate: string;
+  bookNumOfPages: number;
 }
 
 export interface LoginInput {
@@ -41,6 +43,7 @@ export interface ReviewCardProps {
   bookAuthor: string;
   bookThumbnailLink: string;
   bookPublishedDate: string;
+  bookNumOfPages: number;
   setSelectedReview: React.Dispatch<React.SetStateAction<Review>>;
   handleClickOpen: () => void;
 }

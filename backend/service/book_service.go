@@ -72,6 +72,7 @@ func (s Service) SearchBooks(c *gin.Context) ([]entity.ResponseBook, StatusCode,
 		responseBook.Author = strings.Join(bookFromGoogleBooks.VolumeInfo.Authors, ", ")
 		responseBook.ThumbnailLink = bookFromGoogleBooks.VolumeInfo.ImageLinks.Thumbnail
 		responseBook.PublishedDate = bookFromGoogleBooks.VolumeInfo.PublishedDate
+		responseBook.NumOfPages = bookFromGoogleBooks.VolumeInfo.PageCount
 		if isAuthenticated {
 			// ログインユーザが対象の書籍をレビュー済みか判定
 			responseBook.IsReviewed = isReviewed(user.ID, responseBook.Title, responseBook.Author)
