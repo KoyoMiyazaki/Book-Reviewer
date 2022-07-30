@@ -29,6 +29,12 @@ type UpdateReviewRequest struct {
 	Rating  float64 `json:"rating" validate:"required,gte=0.5,lte=5.0"`
 }
 
+// 書籍検索レスポンス用構造体
+type GetReviewsResponse struct {
+	ResponseReviews []ResponseReview `json:"items"`
+	TotalPages      int64            `json:"totalPages"`
+}
+
 // レスポンス用レビュー構造体
 type ResponseReview struct {
 	ID                uint    `json:"id"`
