@@ -137,9 +137,6 @@ const Home = () => {
             }}
           >
             <Stack direction="column" spacing={2}>
-              <Typography variant="body1" component="p" fontWeight={600}>
-                {selectedReview.bookTitle}
-              </Typography>
               <Stack direction="row" spacing={2}>
                 <img
                   src={selectedReview.bookThumbnailLink}
@@ -147,6 +144,9 @@ const Home = () => {
                   height={150}
                 />
                 <Stack direction="column">
+                  <Typography variant="body1" component="p" fontWeight={600}>
+                    {selectedReview.bookTitle}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     著者: {selectedReview.bookAuthor}
                   </Typography>
@@ -161,6 +161,7 @@ const Home = () => {
                 </Typography>
                 <Rating
                   name="rating"
+                  size="medium"
                   value={selectedReview.rating}
                   precision={0.5}
                   onChange={(event, newValue) => {
@@ -192,7 +193,7 @@ const Home = () => {
 
             <DialogActions>
               <Button
-                variant="contained"
+                variant="outlined"
                 color="error"
                 onClick={deleteReview}
                 sx={{ textTransform: "none" }}
@@ -200,7 +201,7 @@ const Home = () => {
                 Delete
               </Button>
               <Button
-                variant="contained"
+                variant="outlined"
                 color="success"
                 onClick={updateReview}
                 sx={{ textTransform: "none" }}
