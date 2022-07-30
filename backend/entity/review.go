@@ -21,6 +21,7 @@ type CreateReviewRequest struct {
 	BookAuthor        string  `json:"bookAuthor" validate:"required"`
 	BookThumbnailLink string  `json:"bookThumbnailLink"`
 	BookPublishedDate string  `json:"bookPublishedDate"`
+	BookNumOfPages    uint    `json:"bookNumOfPages"`
 }
 
 // レビュー更新リクエスト用構造体
@@ -44,4 +45,5 @@ type ResponseReview struct {
 	BookAuthor        string  `json:"bookAuthor"`
 	BookThumbnailLink string  `json:"bookThumbnailLink"`
 	BookPublishedDate string  `json:"bookPublishedDate"`
+	BookNumOfPages    uint    `json:"bookNumOfPages"`
 }

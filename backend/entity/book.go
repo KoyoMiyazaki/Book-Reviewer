@@ -7,8 +7,9 @@ type Book struct {
 	Author        string `gorm:"type:varchar;not null;uniqueIndex:title_and_author_unique_idx"`
 	ThumbnailLink string `gorm:"type:varchar"`
 	PublishedDate string `gorm:"type:varchar"`
-	CreatedAt     int64  `gorm:"autoCreateTime"`
-	UpdatedAt     int64  `gorm:"autoUpdateTime"`
+	NumOfPages    uint
+	CreatedAt     int64 `gorm:"autoCreateTime"`
+	UpdatedAt     int64 `gorm:"autoUpdateTime"`
 }
 
 // Google Books APIのレスポンス用構造体
@@ -28,6 +29,7 @@ type VolumeInfoFromGoogleBooks struct {
 	Authors       []string                  `json:"authors"`
 	PublishedDate string                    `json:"publishedDate"`
 	ImageLinks    ImageLinksFromGoogleBooks `json:"imageLinks"`
+	PageCount     uint                      `json:"pageCount"`
 }
 
 // Google Books APIのレスポンス用構造体(imageLinks配下)
@@ -47,5 +49,6 @@ type ResponseBook struct {
 	Author        string `json:"author"`
 	ThumbnailLink string `json:"thumbnailLink"`
 	PublishedDate string `json:"publishedDate"`
+	NumOfPages    uint   `json:"numOfPages"`
 	IsReviewed    bool   `json:"isReviewed"`
 }
