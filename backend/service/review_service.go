@@ -58,10 +58,11 @@ func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, err
 	}
 
 	// ユーザIDをキーに、レビューを取得
-	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
 		// SELECT reviews.id, reviews.comment, reviews.rating, books.title as book_title,
 		//   books.author as book_author, books.thumbnail_link as book_thumbnail_link,
-		//   books.published_date as book_published_date
+		//   books.published_date as book_published_date,
+		//   books.num_of_pages as book_num_of_pages
 		// FROM `reviews` join `books` on reviews.book_id = books.id
 		// WHERE reviews.user_id = user.ID
 		// ORDER BY reviews.updated_at DESC
@@ -133,6 +134,7 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 			Author:        request.BookAuthor,
 			ThumbnailLink: request.BookThumbnailLink,
 			PublishedDate: request.BookPublishedDate,
+			NumOfPages:    request.BookNumOfPages,
 		}
 
 		if err := db.Create(&book).Error; err != nil {
@@ -160,6 +162,7 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
 		BookPublishedDate: book.PublishedDate,
+		BookNumOfPages:    book.NumOfPages,
 	}
 
 	return responseReview, http.StatusCreated, nil
@@ -235,6 +238,7 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
 		BookPublishedDate: book.PublishedDate,
+		BookNumOfPages:    book.NumOfPages,
 	}
 
 	return responseReview, http.StatusOK, nil
