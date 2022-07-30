@@ -128,9 +128,6 @@ const SearchResult = () => {
         }}
       >
         <Stack direction="column" spacing={2}>
-          <Typography variant="body1" component="p" fontWeight={600}>
-            {selectedBook.title}
-          </Typography>
           <Stack direction="row" spacing={2}>
             <img
               src={selectedBook.thumbnailLink}
@@ -138,6 +135,9 @@ const SearchResult = () => {
               height={150}
             />
             <Stack direction="column">
+              <Typography variant="body1" component="p" fontWeight={600}>
+                {selectedBook.title}
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 著者: {selectedBook.author}
               </Typography>
@@ -152,6 +152,7 @@ const SearchResult = () => {
             </Typography>
             <Rating
               name="half-rating"
+              size="medium"
               value={ratingValue}
               precision={0.5}
               onChange={(event, newValue) => {
@@ -172,7 +173,7 @@ const SearchResult = () => {
 
         <DialogActions>
           <Button
-            variant="contained"
+            variant="outlined"
             color="error"
             onClick={handleClose}
             sx={{ textTransform: "none" }}
@@ -180,7 +181,7 @@ const SearchResult = () => {
             Cancel
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             color="success"
             onClick={postReviewComment}
             sx={{ textTransform: "none" }}

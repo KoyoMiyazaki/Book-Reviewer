@@ -17,12 +17,12 @@ const BookCard = ({
       sx={{ maxWidth: { md: "400px", xs: "100%" }, padding: "0.5rem" }}
     >
       <Stack direction="column" spacing={2}>
-        <Typography variant="body1" component="p" fontWeight={600}>
-          {title}
-        </Typography>
         <Stack direction="row" spacing={2}>
           <img src={thumbnailLink} alt={title} height={150} />
           <Stack direction="column">
+            <Typography variant="body1" component="p" fontWeight={600}>
+              {title}
+            </Typography>
             <Typography variant="body2" color="text.secondary">
               著者: {author}
             </Typography>
@@ -32,12 +32,12 @@ const BookCard = ({
           </Stack>
         </Stack>
         {isReviewed ? (
-          <Button variant="contained" disabled>
-            Already reviewed
+          <Button variant="contained" disabled sx={{ textTransform: "none" }}>
+            Already Reviewed
           </Button>
         ) : (
           <Button
-            variant="contained"
+            variant="outlined"
             color="success"
             onClick={() => {
               setSelectedBook({ title, author, publishedDate, thumbnailLink });

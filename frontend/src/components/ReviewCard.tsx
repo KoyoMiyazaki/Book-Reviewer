@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Paper, Rating, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Rating, Stack, Typography } from "@mui/material";
 import { ReviewCardProps } from "../util/types";
 
 const ReviewCard = ({
@@ -24,37 +24,39 @@ const ReviewCard = ({
       sx={{ maxWidth: { md: "400px", xs: "100%" }, padding: "0.5rem" }}
     >
       <Stack direction="column" spacing={2}>
-        <Typography variant="body1" component="p" fontWeight={600}>
-          {bookTitle}
-        </Typography>
         <Stack direction="row" spacing={2}>
           <img src={bookThumbnailLink} alt={bookTitle} height={150} />
-          <Stack direction="column">
-            <Typography variant="body2" color="text.secondary">
-              著者: {bookAuthor}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              出版日: {bookPublishedDate}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              評価:
-            </Typography>
-            <Rating
-              name="half-rating"
-              value={rating}
-              precision={0.5}
-              readOnly
-            />
-            <Typography variant="body2" color="text.secondary">
-              レビュー:
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {shortenComment(comment)}
-            </Typography>
+          <Stack spacing={1} direction="column" sx={{ width: "100%" }}>
+            <Box sx={{ borderBottom: "1px solid #CCC" }}>
+              <Typography variant="body1" component="p" fontWeight={600}>
+                {bookTitle}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                著者: {bookAuthor}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                出版日: {bookPublishedDate}
+              </Typography>
+            </Box>
+            <Box>
+              <Rating
+                name="half-rating"
+                size="small"
+                value={rating}
+                precision={0.5}
+                readOnly
+              />
+              <Typography variant="body2" color="text.secondary">
+                レビュー:
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {shortenComment(comment)}
+              </Typography>
+            </Box>
           </Stack>
         </Stack>
         <Button
-          variant="contained"
+          variant="outlined"
           color="success"
           onClick={() => {
             setSelectedReview({
