@@ -89,6 +89,43 @@ func (ctrl Controller) Login(c *gin.Context) {
 	}
 }
 
+// アカウント更新コントローラ
+func (ctrl Controller) UpdateAccount(c *gin.Context) {
+	var s service.Service
+	updatedUser, statusCode, err := s.UpdateAccount(c)
+
+	if err != nil {
+		response := Response{
+			Status: "error",
+			Error:  err.Error(),
+			Data:   ResponseUser{},
+		}
+		c.JSON(int(statusCode), response)
+	} else {
+		token, statusCode, err := s.GenerateJwtToken(updatedUser)
+		if err != nil {
+			response := Response{
+				Status: "error",
+				Error:  err.Error(),
+				Data:   ResponseUser{},
+			}
+			c.JSON(int(statusCode), response)
+		} else {
+			responseUser := ResponseUser{
+				Name:  updatedUser.Name,
+				Email: updatedUser.Email,
+				Token: token,
+			}
+			response := Response{
+				Status: "success",
+				Error:  "",
+				Data:   responseUser,
+			}
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func (ctrl Controller) WhoAmI(c *gin.Context) {
 	var s service.Service
 	authHeader := c.Request.Header.Get("Authorization")
