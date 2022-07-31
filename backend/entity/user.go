@@ -24,6 +24,14 @@ type LoginRequest struct {
 	Password string `json:"password" validate:"required"`
 }
 
+// ユーザアカウント更新リクエスト用構造体
+type UpdateAccountRequest struct {
+	Password    string `json:"password" validate:"required"`
+	NewName     string `json:"newName" validate:"required"`
+	NewEmail    string `json:"newEmail" validate:"required"`
+	NewPassword string `json:"newPassword" validate:"required"`
+}
+
 // レスポンス用ユーザ構造体
 type ResponseUser struct {
 	Name  string `json:"name"`
