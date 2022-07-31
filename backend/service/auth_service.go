@@ -151,6 +151,39 @@ func (s Service) UpdateAccount(c *gin.Context) (User, StatusCode, error) {
 	return user, http.StatusOK, nil
 }
 
+// アカウント削除サービス
+func (s Service) DeleteAccount(c *gin.Context) (StatusCode, error) {
+	db := db.GetDB()
+	var user User
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return statusCode, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return http.StatusForbidden, err
+	}
+
+	// メールアドレスをキーに、ユーザ取得
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return http.StatusNotFound, err
+	}
+
+	// ユーザ削除
+	if err := db.Delete(&user).Error; err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
+}
+
 // JWTトークン生成サービス
 func (s Service) GenerateJwtToken(user User) (string, StatusCode, error) {
 	err := godotenv.Load()
