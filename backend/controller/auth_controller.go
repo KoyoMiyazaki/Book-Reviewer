@@ -126,6 +126,28 @@ func (ctrl Controller) UpdateAccount(c *gin.Context) {
 	}
 }
 
+// アカウント削除コントローラ
+func (ctrl Controller) DeleteAccount(c *gin.Context) {
+	var s service.Service
+	statusCode, err := s.DeleteAccount(c)
+
+	if err != nil {
+		response := Response{
+			Status: "error",
+			Error:  err.Error(),
+			Data:   ResponseUser{},
+		}
+		c.JSON(int(statusCode), response)
+	} else {
+		response := Response{
+			Status: "success",
+			Error:  "",
+			Data:   "deleted successfully",
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
+
 func (ctrl Controller) WhoAmI(c *gin.Context) {
 	var s service.Service
 	authHeader := c.Request.Header.Get("Authorization")
