@@ -52,6 +52,8 @@ func router() *gin.Engine {
 	{
 		authRouter.POST("/register", controller.Register)
 		authRouter.POST("/login", controller.Login)
+		authRouter.PATCH("/account", controller.UpdateAccount)
+		authRouter.DELETE("/account", controller.DeleteAccount)
 		authRouter.GET("/whoami", controller.WhoAmI)
 	}
 

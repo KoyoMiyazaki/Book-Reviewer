@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/KoyoMiyazaki/Book-Reviewer/db"
@@ -19,6 +20,7 @@ import (
 type User entity.User
 type RegisterRequest entity.RegisterRequest
 type LoginRequest entity.LoginRequest
+type UpdateAccountRequest entity.UpdateAccountRequest
 
 // ユーザ登録サービス
 func (s Service) Register(c *gin.Context) (User, StatusCode, error) {
@@ -89,6 +91,97 @@ func (s Service) Login(c *gin.Context) (User, StatusCode, error) {
 	}
 
 	return user, http.StatusOK, nil
+}
+
+// アカウント更新サービス
+func (s Service) UpdateAccount(c *gin.Context) (User, StatusCode, error) {
+	db := db.GetDB()
+	var user User
+	var request UpdateAccountRequest
+	var validate *validator.Validate = validator.New()
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return User{}, statusCode, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return User{}, http.StatusForbidden, err
+	}
+
+	// JSONリクエストデータを取得
+	if err := c.BindJSON(&request); err != nil {
+		return User{}, http.StatusBadRequest, err
+	}
+
+	// リクエストデータのバリデーションチェック
+	if err := validate.Struct(request); err != nil {
+		return User{}, http.StatusBadRequest, err
+	}
+
+	// メールアドレスをキーに、ユーザ取得
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return User{}, http.StatusNotFound, err
+	}
+
+	// 入力したパスワードと、DB上のパスワードを検証
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(request.Password)); err != nil {
+		return User{}, http.StatusBadRequest, err
+	}
+
+	// パスワードをハッシュ化
+	newPassword := []byte(request.NewPassword)
+	hashedNewPassword, err := bcrypt.GenerateFromPassword(newPassword, 10)
+	if err != nil {
+		return User{}, http.StatusInternalServerError, err
+	}
+
+	// ユーザ更新
+	user.Name = request.NewName
+	user.Email = request.NewEmail
+	user.Password = string(hashedNewPassword)
+	db.Save(&user)
+
+	return user, http.StatusOK, nil
+}
+
+// アカウント削除サービス
+func (s Service) DeleteAccount(c *gin.Context) (StatusCode, error) {
+	db := db.GetDB()
+	var user User
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return statusCode, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return http.StatusForbidden, err
+	}
+
+	// メールアドレスをキーに、ユーザ取得
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return http.StatusNotFound, err
+	}
+
+	// ユーザ削除
+	if err := db.Delete(&user).Error; err != nil {
+		return http.StatusInternalServerError, err
+	}
+
+	return http.StatusOK, nil
 }
 
 // JWTトークン生成サービス

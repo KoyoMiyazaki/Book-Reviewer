@@ -122,6 +122,14 @@ const Navbar = () => {
                 </Typography>
                 <Button
                   color="inherit"
+                  sx={{ fontSize: { sm: "16px", xs: "12px" } }}
+                  component={Link}
+                  to="/profile-manager"
+                >
+                  Profile
+                </Button>
+                <Button
+                  color="inherit"
                   onClick={() => dispatch(logout())}
                   sx={{ fontSize: { sm: "16px", xs: "12px" } }}
                 >

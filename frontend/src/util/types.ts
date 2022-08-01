@@ -29,6 +29,13 @@ export interface RegisterInput {
   passwordConfirmation: string;
 }
 
+export interface UpdateAccountInput {
+  password: string;
+  newName: string | undefined;
+  newEmail: string | undefined;
+  newPassword: string;
+}
+
 export interface BookCardProps extends Book {
   isReviewed: boolean;
   setSelectedBook: React.Dispatch<React.SetStateAction<Book>>;
