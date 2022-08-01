@@ -3,10 +3,12 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   Grid,
+  IconButton,
   Rating,
   Stack,
   TextField,
@@ -15,6 +17,7 @@ import {
 import Title from "../components/Title";
 import { useAppSelector } from "../util/hooks";
 import { Book } from "../util/types";
+import { Close } from "@mui/icons-material";
 
 const SearchResult = () => {
   const location = useLocation();
@@ -131,6 +134,17 @@ const SearchResult = () => {
         }}
       >
         <Stack direction="column" spacing={2}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <IconButton
+              onClick={handleClose}
+              sx={{
+                width: "30px",
+                height: "30px",
+              }}
+            >
+              <Close />
+            </IconButton>
+          </Box>
           <Stack direction="row" spacing={2}>
             <img
               src={selectedBook.thumbnailLink}
@@ -146,6 +160,9 @@ const SearchResult = () => {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 出版日: {selectedBook.publishedDate}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ページ数: {selectedBook.numOfPages}
               </Typography>
             </Stack>
           </Stack>

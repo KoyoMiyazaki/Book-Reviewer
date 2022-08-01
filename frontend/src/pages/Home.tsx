@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   Grid,
+  IconButton,
   Pagination,
   Rating,
   Stack,
@@ -15,6 +17,7 @@ import Title from "../components/Title";
 import ReviewCard from "../components/ReviewCard";
 import { Review } from "../util/types";
 import { useAppSelector } from "../util/hooks";
+import { Close } from "@mui/icons-material";
 
 const Home = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -158,6 +161,17 @@ const Home = () => {
             }}
           >
             <Stack direction="column" spacing={2}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <IconButton
+                  onClick={handleClose}
+                  sx={{
+                    width: "30px",
+                    height: "30px",
+                  }}
+                >
+                  <Close />
+                </IconButton>
+              </Box>
               <Stack direction="row" spacing={2}>
                 <img
                   src={selectedReview.bookThumbnailLink}
@@ -173,6 +187,9 @@ const Home = () => {
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     出版日: {selectedReview.bookPublishedDate}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ページ数: {selectedReview.bookNumOfPages}
                   </Typography>
                 </Stack>
               </Stack>
