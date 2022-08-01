@@ -122,7 +122,10 @@ const Navbar = () => {
                 </Typography>
                 <Button
                   color="inherit"
-                  sx={{ fontSize: { sm: "16px", xs: "12px" } }}
+                  sx={{
+                    fontSize: { sm: "16px", xs: "12px" },
+                    textTransform: "none",
+                  }}
                   component={Link}
                   to="/profile-manager"
                 >
@@ -131,7 +134,10 @@ const Navbar = () => {
                 <Button
                   color="inherit"
                   onClick={() => dispatch(logout())}
-                  sx={{ fontSize: { sm: "16px", xs: "12px" } }}
+                  sx={{
+                    fontSize: { sm: "16px", xs: "12px" },
+                    textTransform: "none",
+                  }}
                 >
                   Logout
                 </Button>
@@ -139,7 +145,10 @@ const Navbar = () => {
             ) : (
               <Button
                 color="inherit"
-                sx={{ fontSize: { sm: "16px", xs: "12px" } }}
+                sx={{
+                  fontSize: { sm: "16px", xs: "12px" },
+                  textTransform: "none",
+                }}
                 component={Link}
                 to="/login"
               >
