@@ -6,13 +6,19 @@ import {
   Grid,
   IconButton,
   InputBase,
+  Menu,
+  MenuItem,
   Paper,
-  Stack,
   styled,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { Home, Search } from "@mui/icons-material";
+import {
+  Home,
+  KeyboardArrowDown,
+  Menu as MenuIcon,
+  Search,
+} from "@mui/icons-material";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { logout } from "../slices/authSlice";
 
@@ -22,11 +28,20 @@ const StyledLink = styled(Link)({
 });
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.auth.user);
 
   const [searchWord, setSearchWord] = useState<string>("");
-  const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleSearchWordInput = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -111,35 +126,71 @@ const Navbar = () => {
             sx={{ display: "flex", justifyContent: "flex-end" }}
           >
             {user ? (
-              <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-                <Typography
-                  variant="body1"
-                  component="p"
-                  fontWeight={600}
-                  sx={{ display: { md: "block", xs: "none" } }}
-                >
-                  Hello, {user.name}!
-                </Typography>
+              <>
+                {/* メニュー */}
+                {/* 小さい画面(600px未満)の場合はハンバーガーメニュー */}
                 <Button
+                  id="menu-button"
+                  aria-controls={open ? "menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
                   color="inherit"
-                  sx={{ fontSize: { sm: "16px", xs: "12px" } }}
-                  component={Link}
-                  to="/profile-manager"
+                  endIcon={<KeyboardArrowDown />}
+                  onClick={handleMenuClick}
+                  sx={{ display: { md: "flex", xs: "none" } }}
                 >
-                  Profile
+                  {user.name}
                 </Button>
-                <Button
-                  color="inherit"
-                  onClick={() => dispatch(logout())}
-                  sx={{ fontSize: { sm: "16px", xs: "12px" } }}
+
+                <IconButton
+                  id="menu-button"
+                  aria-controls={open ? "menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  onClick={handleMenuClick}
+                  sx={{
+                    p: "10px",
+                    color: "white",
+                    display: { md: "none" },
+                  }}
                 >
-                  Logout
-                </Button>
-              </Stack>
+                  <MenuIcon />
+                </IconButton>
+
+                <Menu
+                  id="menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleMenuClose}
+                  MenuListProps={{
+                    "aria-labelledby": "menu-button",
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose();
+                      navigate("/profile-manager");
+                    }}
+                  >
+                    Profile
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      handleMenuClose();
+                      dispatch(logout());
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </>
             ) : (
               <Button
                 color="inherit"
-                sx={{ fontSize: { sm: "16px", xs: "12px" } }}
+                sx={{
+                  fontSize: { sm: "16px", xs: "12px" },
+                  textTransform: "none",
+                }}
                 component={Link}
                 to="/login"
               >

@@ -82,7 +82,7 @@ const Register = () => {
           value={inputValues.passwordConfirmation}
           onChange={handleChange}
         />
-        <Button variant="contained" type="submit">
+        <Button variant="outlined" type="submit" sx={{ textTransform: "none" }}>
           Register
         </Button>
       </Stack>

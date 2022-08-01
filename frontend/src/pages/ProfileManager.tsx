@@ -125,14 +125,23 @@ const ProfileManager = () => {
             value={inputValues.password}
             onChange={handleChange}
           />
-          <Button variant="contained" type="submit">
+          <Button
+            variant="outlined"
+            type="submit"
+            sx={{ textTransform: "none" }}
+          >
             Update Account
           </Button>
         </Stack>
       </form>
 
       {/* ユーザ削除 */}
-      <Button color="error" variant="contained" onClick={handleClickOpen}>
+      <Button
+        color="error"
+        variant="contained"
+        onClick={handleClickOpen}
+        sx={{ textTransform: "none" }}
+      >
         Delete Account
       </Button>
 
@@ -150,8 +159,18 @@ const ProfileManager = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={deleteAccount} autoFocus>
+          <Button
+            onClick={handleClose}
+            sx={{ textTransform: "none" }}
+            autoFocus
+          >
+            Cancel
+          </Button>
+          <Button
+            color="error"
+            onClick={deleteAccount}
+            sx={{ textTransform: "none" }}
+          >
             Delete
           </Button>
         </DialogActions>

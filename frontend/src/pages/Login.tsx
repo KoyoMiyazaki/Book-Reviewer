@@ -70,7 +70,7 @@ const Login = () => {
           <Link to="/register">here</Link>
           {" ."}
         </Typography>
-        <Button variant="contained" type="submit">
+        <Button variant="outlined" type="submit" sx={{ textTransform: "none" }}>
           Login
         </Button>
       </Stack>
