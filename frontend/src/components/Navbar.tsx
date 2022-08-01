@@ -137,7 +137,10 @@ const Navbar = () => {
                   color="inherit"
                   endIcon={<KeyboardArrowDown />}
                   onClick={handleMenuClick}
-                  sx={{ display: { md: "flex", xs: "none" } }}
+                  sx={{
+                    display: { md: "flex", xs: "none" },
+                    textTransform: "none",
+                  }}
                 >
                   {user.name}
                 </Button>
