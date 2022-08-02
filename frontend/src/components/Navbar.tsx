@@ -139,6 +139,7 @@ const Navbar = () => {
                   onClick={handleMenuClick}
                   sx={{
                     display: { md: "flex", xs: "none" },
+                    fontSize: "1rem",
                     textTransform: "none",
                   }}
                 >
