@@ -168,8 +168,8 @@ const Home = () => {
               },
             }}
           >
-            <Stack direction="column" spacing={2}>
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Grid container rowSpacing={2}>
+              <Grid item xs={12}>
                 <IconButton
                   onClick={handleClose}
                   sx={{
@@ -179,13 +179,23 @@ const Home = () => {
                 >
                   <Close />
                 </IconButton>
-              </Box>
-              <Stack direction="row" spacing={2}>
-                <img
+              </Grid>
+              <Grid
+                item
+                xs={4}
+                sx={{ display: { md: "none", xs: "block" } }}
+              ></Grid>
+              <Grid item md={3} xs={4}>
+                <Box
+                  component="img"
                   src={selectedReview.bookThumbnailLink}
                   alt={selectedReview.bookTitle}
                   height={150}
+                  display="block"
+                  margin="0 auto"
                 />
+              </Grid>
+              <Grid item md={9} xs={12}>
                 <Stack direction="column">
                   <Typography variant="body1" component="p" fontWeight={600}>
                     {selectedReview.bookTitle}
@@ -200,42 +210,46 @@ const Home = () => {
                     ページ数: {selectedReview.bookNumOfPages}
                   </Typography>
                 </Stack>
-              </Stack>
-              <Stack direction="column">
-                <Typography variant="body2" color="text.secondary">
-                  Rating
-                </Typography>
-                <Rating
-                  name="rating"
-                  size="medium"
-                  value={selectedReview.rating}
-                  precision={0.5}
-                  onChange={(event, newValue) => {
-                    setSelectedReview((prev) => {
-                      return {
-                        ...prev,
-                        rating: newValue ? newValue : 3,
-                      };
-                    });
-                  }}
-                />
-              </Stack>
-              <TextField
-                label="Review Comment"
-                multiline
-                rows={4}
-                name="comment"
-                value={selectedReview.comment}
-                onChange={(event) => {
-                  setSelectedReview((prev) => {
-                    return {
-                      ...prev,
-                      comment: event.target.value,
-                    };
-                  });
-                }}
-              />
-            </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack direction="column" spacing={2}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Rating
+                    </Typography>
+                    <Rating
+                      name="rating"
+                      size="medium"
+                      value={selectedReview.rating}
+                      precision={0.5}
+                      onChange={(event, newValue) => {
+                        setSelectedReview((prev) => {
+                          return {
+                            ...prev,
+                            rating: newValue ? newValue : 3,
+                          };
+                        });
+                      }}
+                    />
+                  </Box>
+                  <TextField
+                    label="Review Comment"
+                    multiline
+                    rows={4}
+                    name="comment"
+                    value={selectedReview.comment}
+                    onChange={(event) => {
+                      setSelectedReview((prev) => {
+                        return {
+                          ...prev,
+                          comment: event.target.value,
+                        };
+                      });
+                    }}
+                  />
+                </Stack>
+              </Grid>
+            </Grid>
 
             <DialogActions
               sx={{ justifyContent: "space-between", paddingX: 0 }}
@@ -245,6 +259,7 @@ const Home = () => {
                 startIcon={<Twitter />}
                 onClick={tweetComment}
                 sx={{
+                  display: { md: "flex", xs: "none" },
                   backgroundColor: "#1d9bf0",
                   textTransform: "none",
                   "&:hover": {
@@ -254,6 +269,21 @@ const Home = () => {
               >
                 Tweet
               </Button>
+              <IconButton
+                onClick={tweetComment}
+                sx={{
+                  display: { md: "none" },
+                  width: "35px",
+                  height: "35px",
+                  color: "white",
+                  backgroundColor: "#1d9bf0",
+                  "&:hover": {
+                    backgroundColor: "#1d9bf0",
+                  },
+                }}
+              >
+                <Twitter />
+              </IconButton>
               <Stack direction="row" spacing={2}>
                 <Button
                   variant="outlined"

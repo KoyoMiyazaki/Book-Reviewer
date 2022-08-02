@@ -133,8 +133,8 @@ const SearchResult = () => {
           },
         }}
       >
-        <Stack direction="column" spacing={2}>
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+        <Grid container rowSpacing={2}>
+          <Grid item xs={12}>
             <IconButton
               onClick={handleClose}
               sx={{
@@ -144,13 +144,23 @@ const SearchResult = () => {
             >
               <Close />
             </IconButton>
-          </Box>
-          <Stack direction="row" spacing={2}>
-            <img
+          </Grid>
+          <Grid
+            item
+            xs={4}
+            sx={{ display: { md: "none", xs: "block" } }}
+          ></Grid>
+          <Grid item md={3} xs={4}>
+            <Box
+              component="img"
               src={selectedBook.thumbnailLink}
               alt={selectedBook.title}
               height={150}
+              display="block"
+              margin="0 auto"
             />
+          </Grid>
+          <Grid item md={9} xs={12}>
             <Stack direction="column">
               <Typography variant="body1" component="p" fontWeight={600}>
                 {selectedBook.title}
@@ -165,31 +175,35 @@ const SearchResult = () => {
                 ページ数: {selectedBook.numOfPages}
               </Typography>
             </Stack>
-          </Stack>
-          <Stack direction="column">
-            <Typography variant="body2" color="text.secondary">
-              Rating
-            </Typography>
-            <Rating
-              name="half-rating"
-              size="medium"
-              value={ratingValue}
-              precision={0.5}
-              onChange={(event, newValue) => {
-                setRatingValue(newValue!);
-              }}
-            />
-          </Stack>
-          <TextField
-            label="Review Comment"
-            multiline
-            rows={4}
-            value={reviewComment}
-            onChange={(event) => {
-              setReviewComment(event.target.value);
-            }}
-          />
-        </Stack>
+          </Grid>
+          <Grid item xs={12}>
+            <Stack direction="column" spacing={2}>
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Rating
+                </Typography>
+                <Rating
+                  name="half-rating"
+                  size="medium"
+                  value={ratingValue}
+                  precision={0.5}
+                  onChange={(event, newValue) => {
+                    setRatingValue(newValue!);
+                  }}
+                />
+              </Box>
+              <TextField
+                label="Review Comment"
+                multiline
+                rows={4}
+                value={reviewComment}
+                onChange={(event) => {
+                  setReviewComment(event.target.value);
+                }}
+              />
+            </Stack>
+          </Grid>
+        </Grid>
 
         <DialogActions sx={{ paddingX: 0 }}>
           <Stack direction="row" spacing={2}>
