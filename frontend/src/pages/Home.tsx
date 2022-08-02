@@ -17,7 +17,7 @@ import Title from "../components/Title";
 import ReviewCard from "../components/ReviewCard";
 import { Review } from "../util/types";
 import { useAppSelector } from "../util/hooks";
-import { Close } from "@mui/icons-material";
+import { Close, Twitter } from "@mui/icons-material";
 
 const Home = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -106,6 +106,13 @@ const Home = () => {
 
   const handleClose = () => {
     setDialogOpen(false);
+  };
+
+  const tweetComment = () => {
+    const tweetContent = `[${selectedReview.bookTitle}]\n${selectedReview.comment}`;
+    const encodedTweetContent = encodeURI(tweetContent);
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodedTweetContent}`;
+    window.open(tweetUrl, "_blank");
   };
 
   return (
@@ -229,23 +236,41 @@ const Home = () => {
               />
             </Stack>
 
-            <DialogActions>
+            <DialogActions
+              sx={{ justifyContent: "space-between", paddingX: 0 }}
+            >
               <Button
-                variant="outlined"
-                color="error"
-                onClick={deleteReview}
-                sx={{ textTransform: "none" }}
+                variant="contained"
+                startIcon={<Twitter />}
+                onClick={tweetComment}
+                sx={{
+                  backgroundColor: "#1d9bf0",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "#0c7abf",
+                  },
+                }}
               >
-                Delete
+                Tweet
               </Button>
-              <Button
-                variant="outlined"
-                color="success"
-                onClick={updateReview}
-                sx={{ textTransform: "none" }}
-              >
-                Update
-              </Button>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={deleteReview}
+                  sx={{ textTransform: "none" }}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  onClick={updateReview}
+                  sx={{ textTransform: "none" }}
+                >
+                  Update
+                </Button>
+              </Stack>
             </DialogActions>
           </Dialog>
         </>
