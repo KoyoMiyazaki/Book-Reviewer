@@ -191,23 +191,25 @@ const SearchResult = () => {
           />
         </Stack>
 
-        <DialogActions>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={handleClose}
-            sx={{ textTransform: "none" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="outlined"
-            color="success"
-            onClick={postReviewComment}
-            sx={{ textTransform: "none" }}
-          >
-            Submit
-          </Button>
+        <DialogActions sx={{ paddingX: 0 }}>
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleClose}
+              sx={{ textTransform: "none" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={postReviewComment}
+              sx={{ textTransform: "none" }}
+            >
+              Submit
+            </Button>
+          </Stack>
         </DialogActions>
       </Dialog>
     </Stack>

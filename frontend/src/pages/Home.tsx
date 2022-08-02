@@ -122,41 +122,42 @@ const Home = () => {
       ) : reviews.length === 0 ? (
         <Title title="Let's search books you want to review!" />
       ) : (
-        <>
-          <Stack direction="column" spacing={2}>
-            <Title title="Your Review" />
-            <Grid container spacing={2} marginTop="1rem">
-              {reviews.map((review) => {
-                return (
-                  <Grid item xs={12} sm={6} key={review.id}>
-                    <ReviewCard
-                      id={review.id}
-                      comment={review.comment}
-                      rating={review.rating}
-                      bookTitle={review.bookTitle}
-                      bookAuthor={review.bookAuthor}
-                      bookThumbnailLink={review.bookThumbnailLink}
-                      bookPublishedDate={review.bookPublishedDate}
-                      bookNumOfPages={review.bookNumOfPages}
-                      setSelectedReview={setSelectedReview}
-                      handleClickOpen={handleClickOpen}
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
-            {/* ページネーション */}
-            <Pagination
-              count={totalPages}
-              size="large"
-              variant="outlined"
-              color="primary"
-              sx={{ "& .MuiPagination-ul": { justifyContent: "center" } }}
-              onChange={(event, page) => {
-                setCurrentPage(page);
-              }}
-            />
-          </Stack>
+        <Box>
+          <Title title="Your Review" />
+          <Grid container spacing={2} marginTop="1rem">
+            {reviews.map((review) => {
+              return (
+                <Grid item xs={12} sm={6} key={review.id}>
+                  <ReviewCard
+                    id={review.id}
+                    comment={review.comment}
+                    rating={review.rating}
+                    bookTitle={review.bookTitle}
+                    bookAuthor={review.bookAuthor}
+                    bookThumbnailLink={review.bookThumbnailLink}
+                    bookPublishedDate={review.bookPublishedDate}
+                    bookNumOfPages={review.bookNumOfPages}
+                    setSelectedReview={setSelectedReview}
+                    handleClickOpen={handleClickOpen}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+          {/* ページネーション */}
+          <Pagination
+            count={totalPages}
+            size="large"
+            variant="outlined"
+            color="primary"
+            sx={{
+              marginTop: "1.5rem",
+              "& .MuiPagination-ul": { justifyContent: "center" },
+            }}
+            onChange={(event, page) => {
+              setCurrentPage(page);
+            }}
+          />
           {/* ダイアログ */}
           <Dialog
             open={dialogOpen}
@@ -273,7 +274,7 @@ const Home = () => {
               </Stack>
             </DialogActions>
           </Dialog>
-        </>
+        </Box>
       )}
     </Stack>
   );
