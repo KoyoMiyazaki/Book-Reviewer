@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   Grid,
+  IconButton,
   Pagination,
   Rating,
   Stack,
@@ -15,6 +17,7 @@ import Title from "../components/Title";
 import ReviewCard from "../components/ReviewCard";
 import { Review } from "../util/types";
 import { useAppSelector } from "../util/hooks";
+import { Close, Twitter } from "@mui/icons-material";
 
 const Home = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -105,6 +108,13 @@ const Home = () => {
     setDialogOpen(false);
   };
 
+  const tweetComment = () => {
+    const tweetContent = `[${selectedReview.bookTitle}]\n${selectedReview.comment}`;
+    const encodedTweetContent = encodeURI(tweetContent);
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodedTweetContent}`;
+    window.open(tweetUrl, "_blank");
+  };
+
   return (
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
       {!user ? (
@@ -112,41 +122,42 @@ const Home = () => {
       ) : reviews.length === 0 ? (
         <Title title="Let's search books you want to review!" />
       ) : (
-        <>
-          <Stack direction="column" spacing={2}>
-            <Title title="Your Review" />
-            <Grid container spacing={2} marginTop="1rem">
-              {reviews.map((review) => {
-                return (
-                  <Grid item xs={12} sm={6} key={review.id}>
-                    <ReviewCard
-                      id={review.id}
-                      comment={review.comment}
-                      rating={review.rating}
-                      bookTitle={review.bookTitle}
-                      bookAuthor={review.bookAuthor}
-                      bookThumbnailLink={review.bookThumbnailLink}
-                      bookPublishedDate={review.bookPublishedDate}
-                      bookNumOfPages={review.bookNumOfPages}
-                      setSelectedReview={setSelectedReview}
-                      handleClickOpen={handleClickOpen}
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
-            {/* ページネーション */}
-            <Pagination
-              count={totalPages}
-              size="large"
-              variant="outlined"
-              color="primary"
-              sx={{ "& .MuiPagination-ul": { justifyContent: "center" } }}
-              onChange={(event, page) => {
-                setCurrentPage(page);
-              }}
-            />
-          </Stack>
+        <Box>
+          <Title title="Your Review" />
+          <Grid container spacing={2} marginTop="1rem">
+            {reviews.map((review) => {
+              return (
+                <Grid item xs={12} sm={6} key={review.id}>
+                  <ReviewCard
+                    id={review.id}
+                    comment={review.comment}
+                    rating={review.rating}
+                    bookTitle={review.bookTitle}
+                    bookAuthor={review.bookAuthor}
+                    bookThumbnailLink={review.bookThumbnailLink}
+                    bookPublishedDate={review.bookPublishedDate}
+                    bookNumOfPages={review.bookNumOfPages}
+                    setSelectedReview={setSelectedReview}
+                    handleClickOpen={handleClickOpen}
+                  />
+                </Grid>
+              );
+            })}
+          </Grid>
+          {/* ページネーション */}
+          <Pagination
+            count={totalPages}
+            size="large"
+            variant="outlined"
+            color="primary"
+            sx={{
+              marginTop: "1.5rem",
+              "& .MuiPagination-ul": { justifyContent: "center" },
+            }}
+            onChange={(event, page) => {
+              setCurrentPage(page);
+            }}
+          />
           {/* ダイアログ */}
           <Dialog
             open={dialogOpen}
@@ -157,13 +168,34 @@ const Home = () => {
               },
             }}
           >
-            <Stack direction="column" spacing={2}>
-              <Stack direction="row" spacing={2}>
-                <img
+            <Grid container rowSpacing={2}>
+              <Grid item xs={12}>
+                <IconButton
+                  onClick={handleClose}
+                  sx={{
+                    width: "30px",
+                    height: "30px",
+                  }}
+                >
+                  <Close />
+                </IconButton>
+              </Grid>
+              <Grid
+                item
+                xs={4}
+                sx={{ display: { md: "none", xs: "block" } }}
+              ></Grid>
+              <Grid item md={3} xs={4}>
+                <Box
+                  component="img"
                   src={selectedReview.bookThumbnailLink}
                   alt={selectedReview.bookTitle}
                   height={150}
+                  display="block"
+                  margin="0 auto"
                 />
+              </Grid>
+              <Grid item md={9} xs={12}>
                 <Stack direction="column">
                   <Typography variant="body1" component="p" fontWeight={600}>
                     {selectedReview.bookTitle}
@@ -174,64 +206,105 @@ const Home = () => {
                   <Typography variant="body2" color="text.secondary">
                     出版日: {selectedReview.bookPublishedDate}
                   </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    ページ数: {selectedReview.bookNumOfPages}
+                  </Typography>
                 </Stack>
-              </Stack>
-              <Stack direction="column">
-                <Typography variant="body2" color="text.secondary">
-                  Rating
-                </Typography>
-                <Rating
-                  name="rating"
-                  size="medium"
-                  value={selectedReview.rating}
-                  precision={0.5}
-                  onChange={(event, newValue) => {
-                    setSelectedReview((prev) => {
-                      return {
-                        ...prev,
-                        rating: newValue ? newValue : 3,
-                      };
-                    });
-                  }}
-                />
-              </Stack>
-              <TextField
-                label="Review Comment"
-                multiline
-                rows={4}
-                name="comment"
-                value={selectedReview.comment}
-                onChange={(event) => {
-                  setSelectedReview((prev) => {
-                    return {
-                      ...prev,
-                      comment: event.target.value,
-                    };
-                  });
-                }}
-              />
-            </Stack>
+              </Grid>
+              <Grid item xs={12}>
+                <Stack direction="column" spacing={2}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Rating
+                    </Typography>
+                    <Rating
+                      name="rating"
+                      size="medium"
+                      value={selectedReview.rating}
+                      precision={0.5}
+                      onChange={(event, newValue) => {
+                        setSelectedReview((prev) => {
+                          return {
+                            ...prev,
+                            rating: newValue ? newValue : 3,
+                          };
+                        });
+                      }}
+                    />
+                  </Box>
+                  <TextField
+                    label="Review Comment"
+                    multiline
+                    rows={4}
+                    name="comment"
+                    value={selectedReview.comment}
+                    onChange={(event) => {
+                      setSelectedReview((prev) => {
+                        return {
+                          ...prev,
+                          comment: event.target.value,
+                        };
+                      });
+                    }}
+                  />
+                </Stack>
+              </Grid>
+            </Grid>
 
-            <DialogActions>
+            <DialogActions
+              sx={{ justifyContent: "space-between", paddingX: 0 }}
+            >
               <Button
-                variant="outlined"
-                color="error"
-                onClick={deleteReview}
-                sx={{ textTransform: "none" }}
+                variant="contained"
+                startIcon={<Twitter />}
+                onClick={tweetComment}
+                sx={{
+                  display: { md: "flex", xs: "none" },
+                  backgroundColor: "#1d9bf0",
+                  textTransform: "none",
+                  "&:hover": {
+                    backgroundColor: "#0c7abf",
+                  },
+                }}
               >
-                Delete
+                Tweet
               </Button>
-              <Button
-                variant="outlined"
-                color="success"
-                onClick={updateReview}
-                sx={{ textTransform: "none" }}
+              <IconButton
+                onClick={tweetComment}
+                sx={{
+                  display: { md: "none" },
+                  width: "35px",
+                  height: "35px",
+                  color: "white",
+                  backgroundColor: "#1d9bf0",
+                  "&:hover": {
+                    backgroundColor: "#1d9bf0",
+                  },
+                }}
               >
-                Update
-              </Button>
+                <Twitter />
+              </IconButton>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={deleteReview}
+                  sx={{ textTransform: "none" }}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="success"
+                  onClick={updateReview}
+                  sx={{ textTransform: "none" }}
+                >
+                  Update
+                </Button>
+              </Stack>
             </DialogActions>
           </Dialog>
-        </>
+        </Box>
       )}
     </Stack>
   );

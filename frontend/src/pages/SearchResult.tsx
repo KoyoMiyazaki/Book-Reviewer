@@ -3,10 +3,12 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   Grid,
+  IconButton,
   Rating,
   Stack,
   TextField,
@@ -15,6 +17,7 @@ import {
 import Title from "../components/Title";
 import { useAppSelector } from "../util/hooks";
 import { Book } from "../util/types";
+import { Close } from "@mui/icons-material";
 
 const SearchResult = () => {
   const location = useLocation();
@@ -130,13 +133,34 @@ const SearchResult = () => {
           },
         }}
       >
-        <Stack direction="column" spacing={2}>
-          <Stack direction="row" spacing={2}>
-            <img
+        <Grid container rowSpacing={2}>
+          <Grid item xs={12}>
+            <IconButton
+              onClick={handleClose}
+              sx={{
+                width: "30px",
+                height: "30px",
+              }}
+            >
+              <Close />
+            </IconButton>
+          </Grid>
+          <Grid
+            item
+            xs={4}
+            sx={{ display: { md: "none", xs: "block" } }}
+          ></Grid>
+          <Grid item md={3} xs={4}>
+            <Box
+              component="img"
               src={selectedBook.thumbnailLink}
               alt={selectedBook.title}
               height={150}
+              display="block"
+              margin="0 auto"
             />
+          </Grid>
+          <Grid item md={9} xs={12}>
             <Stack direction="column">
               <Typography variant="body1" component="p" fontWeight={600}>
                 {selectedBook.title}
@@ -147,50 +171,59 @@ const SearchResult = () => {
               <Typography variant="body2" color="text.secondary">
                 出版日: {selectedBook.publishedDate}
               </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ページ数: {selectedBook.numOfPages}
+              </Typography>
             </Stack>
-          </Stack>
-          <Stack direction="column">
-            <Typography variant="body2" color="text.secondary">
-              Rating
-            </Typography>
-            <Rating
-              name="half-rating"
-              size="medium"
-              value={ratingValue}
-              precision={0.5}
-              onChange={(event, newValue) => {
-                setRatingValue(newValue!);
-              }}
-            />
-          </Stack>
-          <TextField
-            label="Review Comment"
-            multiline
-            rows={4}
-            value={reviewComment}
-            onChange={(event) => {
-              setReviewComment(event.target.value);
-            }}
-          />
-        </Stack>
+          </Grid>
+          <Grid item xs={12}>
+            <Stack direction="column" spacing={2}>
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  Rating
+                </Typography>
+                <Rating
+                  name="half-rating"
+                  size="medium"
+                  value={ratingValue}
+                  precision={0.5}
+                  onChange={(event, newValue) => {
+                    setRatingValue(newValue!);
+                  }}
+                />
+              </Box>
+              <TextField
+                label="Review Comment"
+                multiline
+                rows={4}
+                value={reviewComment}
+                onChange={(event) => {
+                  setReviewComment(event.target.value);
+                }}
+              />
+            </Stack>
+          </Grid>
+        </Grid>
 
-        <DialogActions>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={handleClose}
-            sx={{ textTransform: "none" }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="outlined"
-            color="success"
-            onClick={postReviewComment}
-            sx={{ textTransform: "none" }}
-          >
-            Submit
-          </Button>
+        <DialogActions sx={{ paddingX: 0 }}>
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={handleClose}
+              sx={{ textTransform: "none" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={postReviewComment}
+              sx={{ textTransform: "none" }}
+            >
+              Submit
+            </Button>
+          </Stack>
         </DialogActions>
       </Dialog>
     </Stack>
