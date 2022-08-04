@@ -6,6 +6,7 @@ const ReviewCard = ({
   id,
   comment,
   rating,
+  readAt,
   bookTitle,
   bookAuthor,
   bookThumbnailLink,
@@ -43,6 +44,12 @@ const ReviewCard = ({
               </Typography>
             </Box>
             <Box>
+              <Typography variant="body2" color="text.secondary">
+                読んだ日: {readAt}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                評価:
+              </Typography>
               <Rating
                 name="half-rating"
                 size="small"
@@ -67,6 +74,7 @@ const ReviewCard = ({
               id,
               comment,
               rating,
+              readAt,
               bookTitle,
               bookAuthor,
               bookThumbnailLink,
