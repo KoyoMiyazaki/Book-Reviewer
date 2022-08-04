@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/KoyoMiyazaki/Book-Reviewer/db"
 	"github.com/KoyoMiyazaki/Book-Reviewer/entity"
@@ -58,9 +59,10 @@ func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, err
 	}
 
 	// ユーザIDをキーに、レビューを取得
-	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
-		// SELECT reviews.id, reviews.comment, reviews.rating, books.title as book_title,
-		//   books.author as book_author, books.thumbnail_link as book_thumbnail_link,
+	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, to_char(reviews.read_at, 'YYYY-MM-DD') as read_at, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
+		// SELECT reviews.id, reviews.comment, reviews.rating, to_char(reviews.read_at, 'YYYY-MM-DD') as read_at,
+		//   books.title as book_title, books.author as book_author,
+		//   books.thumbnail_link as book_thumbnail_link,
 		//   books.published_date as book_published_date,
 		//   books.num_of_pages as book_num_of_pages
 		// FROM `reviews` join `books` on reviews.book_id = books.id
@@ -141,11 +143,20 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 			return ResponseReview{}, http.StatusBadRequest, err
 		}
 	}
+	fmt.Println(request.ReadAt)
+
+	// 文字列→日付オブジェクトへ変換
+	dateLayout := "2006-01-02"
+	convertedReadAt, err := time.Parse(dateLayout, request.ReadAt)
+	if err != nil {
+		return ResponseReview{}, http.StatusBadRequest, err
+	}
 
 	// Reviewを新規作成
 	newReview := Review{
 		Comment: request.Comment,
 		Rating:  request.Rating,
+		ReadAt:  convertedReadAt,
 		UserID:  user.ID,
 		BookID:  book.ID,
 	}
@@ -158,6 +169,7 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	responseReview := ResponseReview{
 		Comment:           newReview.Comment,
 		Rating:            newReview.Rating,
+		ReadAt:            request.ReadAt,
 		BookTitle:         book.Title,
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
@@ -217,9 +229,17 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		return ResponseReview{}, http.StatusForbidden, fmt.Errorf("couldn't update this review")
 	}
 
+	// 文字列→日付オブジェクトへ変換
+	dateLayout := "2006-01-02"
+	convertedReadAt, err := time.Parse(dateLayout, request.ReadAt)
+	if err != nil {
+		return ResponseReview{}, http.StatusBadRequest, err
+	}
+
 	// レビューを更新
 	review.Comment = request.Comment
 	review.Rating = request.Rating
+	review.ReadAt = convertedReadAt
 	if err := db.Save(&review).Error; err != nil {
 		return ResponseReview{}, http.StatusInternalServerError, err
 	}
@@ -234,6 +254,7 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	responseReview := ResponseReview{
 		Comment:           review.Comment,
 		Rating:            review.Rating,
+		ReadAt:            request.ReadAt,
 		BookTitle:         book.Title,
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
