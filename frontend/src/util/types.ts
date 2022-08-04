@@ -10,6 +10,7 @@ export interface Review {
   id: number;
   comment: string;
   rating: number;
+  readAt: string;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
@@ -46,6 +47,7 @@ export interface ReviewCardProps {
   id: number;
   comment: string;
   rating: number;
+  readAt: string;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
