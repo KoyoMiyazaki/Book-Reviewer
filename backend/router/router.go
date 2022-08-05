@@ -38,6 +38,7 @@ func router() *gin.Engine {
 		reviewRouter.POST("/", controller.CreateReview)
 		reviewRouter.PATCH("/:id", controller.UpdateReview)
 		reviewRouter.DELETE("/:id", controller.DeleteReview)
+		reviewRouter.GET("/statistics", controller.GetReviewStats)
 	}
 
 	// 書籍関連のルーティング
