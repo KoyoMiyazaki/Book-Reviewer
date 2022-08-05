@@ -53,3 +53,11 @@ type ResponseReview struct {
 	BookPublishedDate string  `json:"bookPublishedDate"`
 	BookNumOfPages    uint    `json:"bookNumOfPages"`
 }
+
+// レビュー統計情報レスポンス用構造体
+type GetReviewStatsResponse struct {
+	NumOfReadBooksOfMonth int64 `json:"numOfReadBooksOfMonth"`
+	NumOfReadPagesOfMonth int64 `json:"numOfReadPagesOfMonth"`
+	NumOfReadBooksOfYear  int64 `json:"numOfReadBooksOfYear"`
+	NumOfReadPagesOfYear  int64 `json:"numOfReadPagesOfYear"`
+}
