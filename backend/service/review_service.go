@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
+	"gorm.io/gorm"
 )
 
 type Book entity.Book
@@ -20,6 +21,7 @@ type CreateReviewRequest entity.CreateReviewRequest
 type UpdateReviewRequest entity.UpdateReviewRequest
 type GetReviewsResponse entity.GetReviewsResponse
 type ResponseReview entity.ResponseReview
+type GetReviewStatsResponse entity.GetReviewStatsResponse
 
 // レビュー取得サービス
 func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, error) {
@@ -143,7 +145,6 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 			return ResponseReview{}, http.StatusBadRequest, err
 		}
 	}
-	fmt.Println(request.ReadAt)
 
 	// 文字列→日付オブジェクトへ変換
 	dateLayout := "2006-01-02"
@@ -307,4 +308,130 @@ func (s Service) DeleteReview(c *gin.Context) (StatusCode, error) {
 	}
 
 	return http.StatusOK, nil
+}
+
+// レビューの統計情報取得サービス
+func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusCode, error) {
+	db := db.GetDB()
+	var user User
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return GetReviewStatsResponse{}, statusCode, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return GetReviewStatsResponse{}, http.StatusForbidden, err
+	}
+
+	// メールアドレスをキーに、ユーザを取得
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return GetReviewStatsResponse{}, http.StatusNotFound, err
+	}
+
+	// パラメータ取得、指定されてない場合は今月、今年を設定
+	var month, year int
+	if c.Query("month") == "" {
+		month = int(time.Now().Month())
+	} else {
+		month, err = strconv.Atoi(c.Query("month"))
+		if err != nil {
+			return GetReviewStatsResponse{}, http.StatusBadRequest, err
+		}
+	}
+	if c.Query("year") == "" {
+		year = int(time.Now().Year())
+	} else {
+		year, err = strconv.Atoi(c.Query("year"))
+		if err != nil {
+			return GetReviewStatsResponse{}, http.StatusBadRequest, err
+		}
+	}
+
+	startDateOfMonth, endDateOfMonth := getStartAndEndDateOfMonth(year, month)
+
+	var subQuery *gorm.DB
+	formattedYear := fmt.Sprintf("%04d", year)
+	// 対象月の読んだ書籍数を取得
+	var numOfReadBooksOfMonth int64
+	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.read_at between ? and ?", user.ID, startDateOfMonth, endDateOfMonth).Count(&numOfReadBooksOfMonth).Error; err != nil {
+		// SELECT reviews.user_id FROM reviews JOIN books ON reviews.book_id = books.id
+		// WHERE reviews.user_id = [user.ID] AND reviews.read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
+		return GetReviewStatsResponse{}, http.StatusNotFound, err
+	}
+
+	// 対象年の読んだ書籍数を取得
+	var numOfReadBooksOfYear int64
+	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.read_at between ? and ?", user.ID, fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear)).Count(&numOfReadBooksOfYear).Error; err != nil {
+		// SELECT reviews.user_id FROM reviews JOIN books ON reviews.book_id = books.id
+		// WHERE reviews.user_id = [user.ID] AND reviews.read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
+		return GetReviewStatsResponse{}, http.StatusNotFound, err
+	}
+
+	// 対象月の読んだページ数を取得
+	var numOfReadPagesOfMonth int64
+	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.read_at between ? and ?", startDateOfMonth, endDateOfMonth)
+	if err := db.Table("(?) as x", subQuery).Select("sum(x.num_of_pages) as num_of_read_pages").Group("x.user_id").Having("x.user_id = ?", user.ID).Find(&numOfReadPagesOfMonth).Error; err != nil {
+		// SELECT sum(x.num_of_pages) AS num_Of_read_pages
+		// FROM (
+		// 	SELECT reviews.user_id, books.num_of_pages FROM reviews JOIN books ON reviews.book_id = books.id
+		// 	WHERE read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
+		// ) AS x
+		// GROUP BY x.user_id HAVING x.user_id = [user.ID];
+		return GetReviewStatsResponse{}, http.StatusNotFound, err
+	}
+
+	// 対象年の読んだページ数を取得
+	var numOfReadPagesOfYear int64
+	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.read_at between ? and ?", fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear))
+	if err := db.Table("(?) as x", subQuery).Select("sum(x.num_of_pages) as num_of_read_pages").Group("x.user_id").Having("x.user_id = ?", user.ID).Find(&numOfReadPagesOfYear).Error; err != nil {
+		// SELECT sum(x.num_of_pages) AS num_Of_read_pages
+		// FROM (
+		// 	SELECT reviews.user_id, books.num_of_pages FROM reviews JOIN books ON reviews.book_id = books.id
+		// 	WHERE read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
+		// ) AS x
+		// GROUP BY x.user_id HAVING x.user_id = [user.ID];
+		return GetReviewStatsResponse{}, http.StatusNotFound, err
+	}
+
+	// レスポンス用データ生成
+	getReviewStatsResponse := GetReviewStatsResponse{
+		NumOfReadBooksOfMonth: numOfReadBooksOfMonth,
+		NumOfReadPagesOfMonth: numOfReadPagesOfMonth,
+		NumOfReadBooksOfYear:  numOfReadBooksOfYear,
+		NumOfReadPagesOfYear:  numOfReadPagesOfYear,
+	}
+
+	return getReviewStatsResponse, http.StatusOK, nil
+}
+
+// 対象月の最初と最後の日付を、YYYY-MM-DDの形式でそれぞれ返却する
+func getStartAndEndDateOfMonth(year, month int) (string, string) {
+	// 対象月の最終日を判定
+	var lastDayOfMonth string
+	switch month {
+	case 2:
+		if year%4 == 0 && year%100 != 0 || year%400 == 0 {
+			lastDayOfMonth = "29"
+		} else {
+			lastDayOfMonth = "28"
+		}
+	case 4, 6, 9, 11:
+		lastDayOfMonth = "30"
+	case 1, 3, 5, 7, 8, 10, 12:
+		lastDayOfMonth = "31"
+	}
+	formattedYear := fmt.Sprintf("%04d", year)
+	formattedMonth := fmt.Sprintf("%02d", month)
+
+	startDateOfMonth := fmt.Sprintf("%s-%s-01", formattedYear, formattedMonth)
+	endDateOfMonth := fmt.Sprintf("%s-%s-%s", formattedYear, formattedMonth, lastDayOfMonth)
+
+	return startDateOfMonth, endDateOfMonth
 }
