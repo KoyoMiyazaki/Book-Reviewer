@@ -25,6 +25,7 @@ const Home = () => {
     id: -1,
     comment: "",
     rating: 0,
+    readAt: "",
     bookTitle: "",
     bookAuthor: "",
     bookThumbnailLink: "",
@@ -132,6 +133,7 @@ const Home = () => {
                     id={review.id}
                     comment={review.comment}
                     rating={review.rating}
+                    readAt={review.readAt}
                     bookTitle={review.bookTitle}
                     bookAuthor={review.bookAuthor}
                     bookThumbnailLink={review.bookThumbnailLink}
@@ -213,6 +215,23 @@ const Home = () => {
               </Grid>
               <Grid item xs={12}>
                 <Stack direction="column" spacing={2}>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Finished Reading Date
+                    </Typography>
+                    <TextField
+                      type="date"
+                      value={selectedReview.readAt}
+                      onChange={(event) => {
+                        setSelectedReview((prev) => {
+                          return {
+                            ...prev,
+                            readAt: event.target.value,
+                          };
+                        });
+                      }}
+                    />
+                  </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
                       Rating

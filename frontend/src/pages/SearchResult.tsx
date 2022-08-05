@@ -34,6 +34,7 @@ const SearchResult = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(3);
   const [reviewComment, setReviewComment] = useState<string>("");
+  const [readAt, setReadAt] = useState<string>("");
   const user = useAppSelector((state) => state.auth.user);
 
   const handleClickOpen = () => {
@@ -51,6 +52,7 @@ const SearchResult = () => {
     const postData = {
       comment: reviewComment,
       rating: ratingValue,
+      readAt: readAt,
       userEmail: user?.email,
       bookTitle: selectedBook.title,
       bookAuthor: selectedBook.author,
@@ -180,6 +182,18 @@ const SearchResult = () => {
             <Stack direction="column" spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary">
+                  Finished Reading Date
+                </Typography>
+                <TextField
+                  type="date"
+                  value={readAt}
+                  onChange={(event) => {
+                    setReadAt(event.target.value);
+                  }}
+                />
+              </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">
                   Rating
                 </Typography>
                 <Rating
@@ -192,6 +206,7 @@ const SearchResult = () => {
                   }}
                 />
               </Box>
+
               <TextField
                 label="Review Comment"
                 multiline

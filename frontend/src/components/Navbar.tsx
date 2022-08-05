@@ -173,7 +173,7 @@ const Navbar = () => {
                   <MenuItem
                     onClick={() => {
                       handleMenuClose();
-                      navigate("/profile-manager");
+                      navigate("/profile");
                     }}
                   >
                     Profile
