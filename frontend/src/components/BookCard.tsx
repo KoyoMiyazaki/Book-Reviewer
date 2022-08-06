@@ -25,19 +25,19 @@ const BookCard = ({
               {title}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              著者: {author}
+              {`著者: ${author}`}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              出版日: {publishedDate}
+              {`出版日: ${publishedDate}`}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              ページ数: {numOfPages}
+              {`ページ数: ${numOfPages}`}
             </Typography>
           </Stack>
         </Stack>
         {isReviewed ? (
           <Button variant="contained" disabled sx={{ textTransform: "none" }}>
-            Already Reviewed
+            {"レビュー済み"}
           </Button>
         ) : (
           <Button
@@ -55,7 +55,7 @@ const BookCard = ({
             }}
             sx={{ textTransform: "none" }}
           >
-            Review This Book
+            {"レビューを入力する"}
           </Button>
         )}
       </Stack>

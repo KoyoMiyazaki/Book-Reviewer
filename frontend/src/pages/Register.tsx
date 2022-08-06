@@ -51,24 +51,24 @@ const Register = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Stack direction="column" spacing={2} maxWidth="600px" margin="0 auto">
-        <Title title="Register" />
+        <Title title="アカウント登録" />
         <TextField
           required
-          label="Name"
+          label="名前"
           name="name"
           value={inputValues.name}
           onChange={handleChange}
         />
         <TextField
           required
-          label="Email Address"
+          label="メールアドレス"
           name="email"
           value={inputValues.email}
           onChange={handleChange}
         />
         <TextField
           required
-          label="Password"
+          label="パスワード"
           type="password"
           name="password"
           value={inputValues.password}
@@ -76,14 +76,14 @@ const Register = () => {
         />
         <TextField
           required
-          label="Confirm Password"
+          label="パスワード(確認用)"
           type="password"
           name="passwordConfirmation"
           value={inputValues.passwordConfirmation}
           onChange={handleChange}
         />
         <Button variant="outlined" type="submit" sx={{ textTransform: "none" }}>
-          Register
+          {"登録"}
         </Button>
       </Stack>
     </form>

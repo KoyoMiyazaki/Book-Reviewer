@@ -49,29 +49,29 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Stack direction="column" spacing={2} maxWidth="600px" margin="0 auto">
-        <Title title="Login" />
+        <Title title="ログイン" />
         <TextField
           required
-          label="Email Address"
+          label="メールアドレス"
           name="email"
           value={inputValues.email}
           onChange={handleChange}
         />
         <TextField
           required
-          label="Password"
+          label="パスワード"
           type="password"
           name="password"
           value={inputValues.password}
           onChange={handleChange}
         />
         <Typography>
-          {"If you want to create account, please click "}
-          <Link to="/register">here</Link>
-          {" ."}
+          {"アカウントを作成する場合は"}
+          <Link to="/register">{"こちら"}</Link>
+          {"をクリックしてください"}
         </Typography>
         <Button variant="outlined" type="submit" sx={{ textTransform: "none" }}>
-          Login
+          {"ログイン"}
         </Button>
       </Stack>
     </form>

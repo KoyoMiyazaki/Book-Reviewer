@@ -76,7 +76,7 @@ const Navbar = () => {
               component="h1"
               sx={{ display: { md: "block", xs: "none" } }}
             >
-              <StyledLink to="/">Book Review</StyledLink>
+              <StyledLink to="/">{"Book Review"}</StyledLink>
             </Typography>
             <IconButton
               sx={{
@@ -176,7 +176,7 @@ const Navbar = () => {
                       navigate("/profile");
                     }}
                   >
-                    Profile
+                    {"プロフィール"}
                   </MenuItem>
                   <MenuItem
                     onClick={() => {
@@ -184,7 +184,7 @@ const Navbar = () => {
                       dispatch(logout());
                     }}
                   >
-                    Logout
+                    {"ログアウト"}
                   </MenuItem>
                 </Menu>
               </>
@@ -198,7 +198,7 @@ const Navbar = () => {
                 component={Link}
                 to="/login"
               >
-                Login
+                {"ログイン"}
               </Button>
             )}
           </Grid>
