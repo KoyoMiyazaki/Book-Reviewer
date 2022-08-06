@@ -106,7 +106,7 @@ const SearchResult = () => {
 
   return (
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
-      <Title title="Search Result" />
+      <Title title="検索結果" />
       <Grid container spacing={2} marginTop="1rem">
         {books.map((book) => {
           return (
@@ -168,13 +168,13 @@ const SearchResult = () => {
                 {selectedBook.title}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                著者: {selectedBook.author}
+                {`著者: ${selectedBook.author}`}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                出版日: {selectedBook.publishedDate}
+                {`出版日: ${selectedBook.publishedDate}`}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                ページ数: {selectedBook.numOfPages}
+                {`ページ数: ${selectedBook.numOfPages}`}
               </Typography>
             </Stack>
           </Grid>
@@ -182,7 +182,7 @@ const SearchResult = () => {
             <Stack direction="column" spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  Finished Reading Date
+                  {"読んだ日"}
                 </Typography>
                 <TextField
                   type="date"
@@ -194,7 +194,7 @@ const SearchResult = () => {
               </Box>
               <Box>
                 <Typography variant="body2" color="text.secondary">
-                  Rating
+                  {"評価"}
                 </Typography>
                 <Rating
                   name="half-rating"
@@ -208,7 +208,7 @@ const SearchResult = () => {
               </Box>
 
               <TextField
-                label="Review Comment"
+                label="コメント"
                 multiline
                 rows={4}
                 value={reviewComment}
@@ -228,7 +228,7 @@ const SearchResult = () => {
               onClick={handleClose}
               sx={{ textTransform: "none" }}
             >
-              Cancel
+              {"戻る"}
             </Button>
             <Button
               variant="outlined"
@@ -236,7 +236,7 @@ const SearchResult = () => {
               onClick={postReviewComment}
               sx={{ textTransform: "none" }}
             >
-              Submit
+              {"登録"}
             </Button>
           </Stack>
         </DialogActions>

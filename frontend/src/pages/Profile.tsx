@@ -70,16 +70,16 @@ const Profile = () => {
   return (
     <Stack direction="column" spacing={2} maxWidth="600px" margin="0 auto">
       {/* ユーザプロファイル欄 */}
-      <Title title="Your Profile" />
+      <Title title="アカウント情報" />
       <Box>
         <Typography variant="subtitle2" color="text.secondary">
-          Name
+          {"名前"}
         </Typography>
         <Input value={user?.name} readOnly sx={{ width: "100%" }} />
       </Box>
       <Box>
         <Typography variant="subtitle2" color="text.secondary">
-          Email
+          {"メールアドレス"}
         </Typography>
         <Input value={user?.email} readOnly sx={{ width: "100%" }} />
       </Box>
@@ -89,11 +89,11 @@ const Profile = () => {
         to="/profile-manager"
         sx={{ textTransform: "none" }}
       >
-        Edit Profile
+        {"アカウントを編集"}
       </Button>
 
       {/* 統計情報欄 */}
-      <Title title="Statistics" />
+      <Title title="統計情報" />
       <TableContainer component={Paper}>
         <Table sx={{ width: "100%" }} aria-label="simple table">
           <TableBody>
@@ -148,7 +148,7 @@ const Profile = () => {
           },
         }}
       >
-        Tweet This Statistics
+        {"統計情報をツイート"}
       </Button>
     </Stack>
   );

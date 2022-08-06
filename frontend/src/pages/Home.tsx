@@ -59,14 +59,11 @@ const Home = () => {
   const deleteReview = async () => {
     const token: string | null = localStorage.getItem("jwtToken");
     try {
-      const res = await axios.delete(
-        `http://localhost:8080/review/${selectedReview.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:8080/review/${selectedReview.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setDialogOpen(false);
       getReviews();
     } catch (error) {
@@ -81,7 +78,7 @@ const Home = () => {
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
-      const res = await axios.patch(
+      await axios.patch(
         `http://localhost:8080/review/${selectedReview.id}`,
         postData,
         {
@@ -119,12 +116,12 @@ const Home = () => {
   return (
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
       {!user ? (
-        <Title title="Please Login" />
+        <Title title="ログインしてください" />
       ) : reviews.length === 0 ? (
-        <Title title="Let's search books you want to review!" />
+        <Title title="レビューしたい書籍を検索してみよう！" />
       ) : (
         <Box>
-          <Title title="Your Review" />
+          <Title title="レビュー一覧" />
           <Grid container spacing={2} marginTop="1rem">
             {reviews.map((review) => {
               return (
@@ -203,13 +200,13 @@ const Home = () => {
                     {selectedReview.bookTitle}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    著者: {selectedReview.bookAuthor}
+                    {`著者: ${selectedReview.bookAuthor}`}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    出版日: {selectedReview.bookPublishedDate}
+                    {`出版日: ${selectedReview.bookPublishedDate}`}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    ページ数: {selectedReview.bookNumOfPages}
+                    {`ページ数: ${selectedReview.bookNumOfPages}`}
                   </Typography>
                 </Stack>
               </Grid>
@@ -217,7 +214,7 @@ const Home = () => {
                 <Stack direction="column" spacing={2}>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Finished Reading Date
+                      {"読んだ日"}
                     </Typography>
                     <TextField
                       type="date"
@@ -234,7 +231,7 @@ const Home = () => {
                   </Box>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      Rating
+                      {"評価"}
                     </Typography>
                     <Rating
                       name="rating"
@@ -252,7 +249,7 @@ const Home = () => {
                     />
                   </Box>
                   <TextField
-                    label="Review Comment"
+                    label="コメント"
                     multiline
                     rows={4}
                     name="comment"
@@ -286,7 +283,7 @@ const Home = () => {
                   },
                 }}
               >
-                Tweet
+                {"ツイート"}
               </Button>
               <IconButton
                 onClick={tweetComment}
@@ -310,7 +307,7 @@ const Home = () => {
                   onClick={deleteReview}
                   sx={{ textTransform: "none" }}
                 >
-                  Delete
+                  {"削除"}
                 </Button>
                 <Button
                   variant="outlined"
@@ -318,7 +315,7 @@ const Home = () => {
                   onClick={updateReview}
                   sx={{ textTransform: "none" }}
                 >
-                  Update
+                  {"更新"}
                 </Button>
               </Stack>
             </DialogActions>

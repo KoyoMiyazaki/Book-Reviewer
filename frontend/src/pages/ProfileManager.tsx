@@ -94,24 +94,24 @@ const ProfileManager = () => {
       {/* ユーザ更新 */}
       <form onSubmit={handleSubmit}>
         <Stack direction="column" spacing={2}>
-          <Title title="Update Account" />
+          <Title title="アカウント編集" />
           <TextField
             required
-            label="New Name"
+            label="新しい名前"
             name="newName"
             value={inputValues.newName}
             onChange={handleChange}
           />
           <TextField
             required
-            label="New Email Address"
+            label="新しいメールアドレス"
             name="newEmail"
             value={inputValues.newEmail}
             onChange={handleChange}
           />
           <TextField
             required
-            label="New Password"
+            label="新しいパスワード"
             type="password"
             name="newPassword"
             value={inputValues.newPassword}
@@ -119,7 +119,7 @@ const ProfileManager = () => {
           />
           <TextField
             required
-            label="Password"
+            label="現在のパスワード"
             type="password"
             name="password"
             value={inputValues.password}
@@ -130,7 +130,7 @@ const ProfileManager = () => {
             type="submit"
             sx={{ textTransform: "none" }}
           >
-            Update Account
+            {"更新"}
           </Button>
         </Stack>
       </form>
@@ -142,7 +142,7 @@ const ProfileManager = () => {
         onClick={handleClickOpen}
         sx={{ textTransform: "none" }}
       >
-        Delete Account
+        {"アカウントを削除"}
       </Button>
 
       {/* ダイアログ */}
@@ -152,10 +152,12 @@ const ProfileManager = () => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm delete"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"アカウント削除"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {"Are you sure you want to delete your account?"}
+            {
+              "アカウントを削除するとあなたのレビュー内容などが全て削除されます。\n本当に削除しますか？"
+            }
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -164,14 +166,14 @@ const ProfileManager = () => {
             sx={{ textTransform: "none" }}
             autoFocus
           >
-            Cancel
+            {"削除しない"}
           </Button>
           <Button
             color="error"
             onClick={deleteAccount}
             sx={{ textTransform: "none" }}
           >
-            Delete
+            {"削除する"}
           </Button>
         </DialogActions>
       </Dialog>

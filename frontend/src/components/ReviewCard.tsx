@@ -34,21 +34,21 @@ const ReviewCard = ({
                 {bookTitle}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                著者: {bookAuthor}
+                {`著者: ${bookAuthor}`}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                出版日: {bookPublishedDate}
+                {`出版日: ${bookPublishedDate}`}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                ページ数: {bookNumOfPages}
+                {`ページ数: ${bookNumOfPages}`}
               </Typography>
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
-                読んだ日: {readAt}
+                {`読んだ日: ${readAt}`}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                評価:
+                {"評価:"}
               </Typography>
               <Rating
                 name="half-rating"
@@ -58,7 +58,7 @@ const ReviewCard = ({
                 readOnly
               />
               <Typography variant="body2" color="text.secondary">
-                レビュー:
+                {"コメント:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {shortenComment(comment)}
@@ -85,7 +85,7 @@ const ReviewCard = ({
           }}
           sx={{ textTransform: "none" }}
         >
-          Show Review
+          {"レビューを見る"}
         </Button>
       </Stack>
     </Paper>
