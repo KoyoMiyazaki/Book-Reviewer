@@ -10,11 +10,12 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Title from "../components/Title";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { login, logout } from "../slices/authSlice";
 import { UpdateAccountInput } from "../util/types";
+import { setToast } from "../slices/toastSlice";
 
 const ProfileManager = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -59,9 +60,22 @@ const ProfileManager = () => {
           email: data.email,
         })
       );
+      dispatch(
+        setToast({
+          message: "更新しました！",
+          severity: "success",
+        })
+      );
       navigate("/");
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
@@ -75,9 +89,22 @@ const ProfileManager = () => {
       });
       setDialogOpen(false);
       dispatch(logout());
+      dispatch(
+        setToast({
+          message: "削除しました！",
+          severity: "success",
+        })
+      );
       navigate("/");
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import {
@@ -15,9 +15,10 @@ import {
   Typography,
 } from "@mui/material";
 import Title from "../components/Title";
-import { useAppSelector } from "../util/hooks";
+import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { Book } from "../util/types";
 import { Close } from "@mui/icons-material";
+import { setToast } from "../slices/toastSlice";
 
 const SearchResult = () => {
   const location = useLocation();
@@ -36,6 +37,7 @@ const SearchResult = () => {
   const [reviewComment, setReviewComment] = useState<string>("");
   const [readAt, setReadAt] = useState<string>("");
   const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
 
   const handleClickOpen = () => {
     setDialogOpen(true);
@@ -62,14 +64,27 @@ const SearchResult = () => {
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
-      const res = await axios.post("http://localhost:8080/review/", postData, {
+      await axios.post("http://localhost:8080/review/", postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      dispatch(
+        setToast({
+          message: "登録しました！",
+          severity: "success",
+        })
+      );
       navigate("/");
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
@@ -96,7 +111,14 @@ const SearchResult = () => {
       const data = await res.data;
       setBooks(data.data);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
