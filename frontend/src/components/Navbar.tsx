@@ -182,6 +182,9 @@ const Navbar = () => {
                     onClick={() => {
                       handleMenuClose();
                       dispatch(logout());
+                      navigate("/", {
+                        replace: true,
+                      });
                     }}
                   >
                     {"ログアウト"}
