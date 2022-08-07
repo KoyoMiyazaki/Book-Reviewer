@@ -10,6 +10,7 @@ import {
   Rating,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Close, Twitter } from "@mui/icons-material";
@@ -205,15 +206,17 @@ const Home = () => {
           >
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
-                <IconButton
-                  onClick={handleClose}
-                  sx={{
-                    width: "30px",
-                    height: "30px",
-                  }}
-                >
-                  <Close />
-                </IconButton>
+                <Tooltip title="閉じる">
+                  <IconButton
+                    onClick={handleClose}
+                    sx={{
+                      width: "30px",
+                      height: "30px",
+                    }}
+                  >
+                    <Close />
+                  </IconButton>
+                </Tooltip>
               </Grid>
               <Grid
                 item
@@ -321,21 +324,23 @@ const Home = () => {
               >
                 {"ツイート"}
               </Button>
-              <IconButton
-                onClick={tweetComment}
-                sx={{
-                  display: { md: "none" },
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                  backgroundColor: "#1d9bf0",
-                  "&:hover": {
+              <Tooltip title="ツイート">
+                <IconButton
+                  onClick={tweetComment}
+                  sx={{
+                    display: { md: "none" },
+                    width: "35px",
+                    height: "35px",
+                    color: "white",
                     backgroundColor: "#1d9bf0",
-                  },
-                }}
-              >
-                <Twitter />
-              </IconButton>
+                    "&:hover": {
+                      backgroundColor: "#1d9bf0",
+                    },
+                  }}
+                >
+                  <Twitter />
+                </IconButton>
+              </Tooltip>
               <Stack direction="row" spacing={2}>
                 <Button
                   variant="outlined"

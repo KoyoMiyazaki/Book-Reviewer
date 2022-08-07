@@ -12,6 +12,7 @@ import {
   Rating,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Title from "../components/Title";
@@ -167,15 +168,17 @@ const SearchResult = () => {
       >
         <Grid container rowSpacing={2}>
           <Grid item xs={12}>
-            <IconButton
-              onClick={handleClose}
-              sx={{
-                width: "30px",
-                height: "30px",
-              }}
-            >
-              <Close />
-            </IconButton>
+            <Tooltip title="閉じる">
+              <IconButton
+                onClick={handleClose}
+                sx={{
+                  width: "30px",
+                  height: "30px",
+                }}
+              >
+                <Close />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid
             item
@@ -265,17 +268,19 @@ const SearchResult = () => {
               >
                 {"購入する"}
               </Button>
-              <IconButton
-                onClick={buyBook}
-                color="primary"
-                sx={{
-                  display: { md: "none" },
-                  width: "35px",
-                  height: "35px",
-                }}
-              >
-                <Shop />
-              </IconButton>
+              <Tooltip title="購入する">
+                <IconButton
+                  onClick={buyBook}
+                  color="primary"
+                  sx={{
+                    display: { md: "none" },
+                    width: "35px",
+                    height: "35px",
+                  }}
+                >
+                  <Shop />
+                </IconButton>
+              </Tooltip>
             </>
           ) : (
             <Box></Box>
