@@ -11,6 +11,7 @@ import {
   Paper,
   styled,
   Toolbar,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import {
@@ -78,19 +79,21 @@ const Navbar = () => {
             >
               <StyledLink to="/">{"Book Review"}</StyledLink>
             </Typography>
-            <IconButton
-              sx={{
-                marginRight: "1rem",
-                p: "10px",
-                color: "white",
-                display: { md: "none" },
-              }}
-              aria-label="search"
-              component={Link}
-              to="/"
-            >
-              <Home />
-            </IconButton>
+            <Tooltip title="ホーム">
+              <IconButton
+                sx={{
+                  marginRight: "1rem",
+                  p: "10px",
+                  color: "white",
+                  display: { md: "none" },
+                }}
+                aria-label="search"
+                component={Link}
+                to="/"
+              >
+                <Home />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid item xs={8} md={6}>
             {/* 検索欄 */}
@@ -106,16 +109,22 @@ const Navbar = () => {
             >
               <InputBase
                 sx={{ ml: 1, flex: 1, width: { xs: "120px", sm: "240px" } }}
-                placeholder="Search Book"
+                placeholder="書籍名を入力"
                 inputProps={{ "aria-label": "search book" }}
                 name="q"
                 value={searchWord}
                 onInput={handleSearchWordInput}
                 required
               />
-              <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
-                <Search />
-              </IconButton>
+              <Tooltip title="書籍を検索">
+                <IconButton
+                  type="submit"
+                  sx={{ p: "10px" }}
+                  aria-label="search"
+                >
+                  <Search />
+                </IconButton>
+              </Tooltip>
             </Paper>
           </Grid>
 
@@ -146,20 +155,22 @@ const Navbar = () => {
                   {user.name}
                 </Button>
 
-                <IconButton
-                  id="menu-button"
-                  aria-controls={open ? "menu" : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? "true" : undefined}
-                  onClick={handleMenuClick}
-                  sx={{
-                    p: "10px",
-                    color: "white",
-                    display: { md: "none" },
-                  }}
-                >
-                  <MenuIcon />
-                </IconButton>
+                <Tooltip title="メニュー">
+                  <IconButton
+                    id="menu-button"
+                    aria-controls={open ? "menu" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? "true" : undefined}
+                    onClick={handleMenuClick}
+                    sx={{
+                      p: "10px",
+                      color: "white",
+                      display: { md: "none" },
+                    }}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                </Tooltip>
 
                 <Menu
                   id="menu"

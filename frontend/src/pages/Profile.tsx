@@ -14,9 +14,10 @@ import {
   Typography,
 } from "@mui/material";
 import { Twitter } from "@mui/icons-material";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Title from "../components/Title";
-import { useAppSelector } from "../util/hooks";
+import { useAppDispatch, useAppSelector } from "../util/hooks";
+import { setToast } from "../slices/toastSlice";
 
 const Profile = () => {
   const nowDate = new Date();
@@ -29,6 +30,7 @@ const Profile = () => {
     numOfReadBooksOfYear: 0,
     numOfReadPagesOfYear: 0,
   });
+  const dispatch = useAppDispatch();
 
   const tweetStats = () => {
     const tweetContent = `
@@ -59,7 +61,14 @@ const Profile = () => {
       const data = await res.data;
       setStats(data.data);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 

@@ -21,6 +21,7 @@ type ResponseFromGoogleBooks struct {
 type BookDataFromGoogleBooks struct {
 	ID         string                    `json:"id"`
 	VolumeInfo VolumeInfoFromGoogleBooks `json:"volumeInfo"`
+	SaleInfo   SaleInfoFromGoogleBooks   `json:"saleInfo"`
 }
 
 // Google Books APIのレスポンス用構造体(volumeInfo配下)
@@ -37,6 +38,18 @@ type ImageLinksFromGoogleBooks struct {
 	Thumbnail string `json:"thumbnail"`
 }
 
+// Google Books APIのレスポンス用構造体(saleInfo配下)
+type SaleInfoFromGoogleBooks struct {
+	IsEbook     bool                       `json:"isEbook"`
+	RetailPrice RetailPriceFromGoogleBooks `json:"retailPrice"`
+	BuyLink     string                     `json:"buyLink"`
+}
+
+// Google Books APIのレスポンス用構造体(retailPrice配下)
+type RetailPriceFromGoogleBooks struct {
+	Amount uint `json:"amount"`
+}
+
 // 書籍検索レスポンス用構造体
 type SearchResponse struct {
 	ResponseBooks []ResponseBook `json:"data"`
@@ -51,4 +64,7 @@ type ResponseBook struct {
 	PublishedDate string `json:"publishedDate"`
 	NumOfPages    uint   `json:"numOfPages"`
 	IsReviewed    bool   `json:"isReviewed"`
+	IsForSale     bool   `json:"isForSale"`
+	Price         uint   `json:"price"`
+	BuyLink       string `json:"buyLink"`
 }

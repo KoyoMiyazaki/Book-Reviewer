@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Button, Stack, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Title from "../components/Title";
 import { useAppDispatch } from "../util/hooks";
 import { login } from "../slices/authSlice";
+import { setToast } from "../slices/toastSlice";
 import { RegisterInput } from "../util/types";
 
 const Register = () => {
@@ -42,9 +43,22 @@ const Register = () => {
           email: data.email,
         })
       );
+      dispatch(
+        setToast({
+          message: "ようこそ！",
+          severity: "success",
+        })
+      );
       navigate("/");
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 

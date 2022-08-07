@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import BookCard from "../components/BookCard";
 import {
@@ -12,12 +12,14 @@ import {
   Rating,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Title from "../components/Title";
-import { useAppSelector } from "../util/hooks";
+import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { Book } from "../util/types";
-import { Close } from "@mui/icons-material";
+import { Close, Shop } from "@mui/icons-material";
+import { setToast } from "../slices/toastSlice";
 
 const SearchResult = () => {
   const location = useLocation();
@@ -30,12 +32,15 @@ const SearchResult = () => {
     thumbnailLink: "",
     publishedDate: "",
     numOfPages: 0,
+    isForSale: false,
+    buyLink: "",
   });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(3);
   const [reviewComment, setReviewComment] = useState<string>("");
   const [readAt, setReadAt] = useState<string>("");
   const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
 
   const handleClickOpen = () => {
     setDialogOpen(true);
@@ -62,14 +67,27 @@ const SearchResult = () => {
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
-      const res = await axios.post("http://localhost:8080/review/", postData, {
+      await axios.post("http://localhost:8080/review/", postData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      dispatch(
+        setToast({
+          message: "登録しました！",
+          severity: "success",
+        })
+      );
       navigate("/");
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
@@ -96,13 +114,24 @@ const SearchResult = () => {
       const data = await res.data;
       setBooks(data.data);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
   useEffect(() => {
     getBooksData();
   }, [location]);
+
+  const buyBook = () => {
+    window.open(selectedBook.buyLink, "_blank");
+  };
 
   return (
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
@@ -117,6 +146,8 @@ const SearchResult = () => {
                 thumbnailLink={book.thumbnailLink}
                 publishedDate={book.publishedDate}
                 numOfPages={book.numOfPages}
+                isForSale={book.isForSale}
+                buyLink={book.buyLink}
                 isReviewed={book.isReviewed}
                 setSelectedBook={setSelectedBook}
                 handleClickOpen={handleClickOpen}
@@ -137,15 +168,17 @@ const SearchResult = () => {
       >
         <Grid container rowSpacing={2}>
           <Grid item xs={12}>
-            <IconButton
-              onClick={handleClose}
-              sx={{
-                width: "30px",
-                height: "30px",
-              }}
-            >
-              <Close />
-            </IconButton>
+            <Tooltip title="閉じる">
+              <IconButton
+                onClick={handleClose}
+                sx={{
+                  width: "30px",
+                  height: "30px",
+                }}
+              >
+                <Close />
+              </IconButton>
+            </Tooltip>
           </Grid>
           <Grid
             item
@@ -220,7 +253,38 @@ const SearchResult = () => {
           </Grid>
         </Grid>
 
-        <DialogActions sx={{ paddingX: 0 }}>
+        <DialogActions sx={{ justifyContent: "space-between", paddingX: 0 }}>
+          {selectedBook.isForSale ? (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Shop />}
+                onClick={buyBook}
+                sx={{
+                  display: { md: "flex", xs: "none" },
+                  textTransform: "none",
+                }}
+              >
+                {"購入する"}
+              </Button>
+              <Tooltip title="購入する">
+                <IconButton
+                  onClick={buyBook}
+                  color="primary"
+                  sx={{
+                    display: { md: "none" },
+                    width: "35px",
+                    height: "35px",
+                  }}
+                >
+                  <Shop />
+                </IconButton>
+              </Tooltip>
+            </>
+          ) : (
+            <Box></Box>
+          )}
           <Stack direction="row" spacing={2}>
             <Button
               variant="outlined"

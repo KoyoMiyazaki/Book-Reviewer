@@ -4,6 +4,8 @@ export interface Book {
   thumbnailLink: string;
   publishedDate: string;
   numOfPages: number;
+  isForSale: boolean;
+  buyLink: string;
 }
 
 export interface Review {

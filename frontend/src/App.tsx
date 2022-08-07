@@ -9,6 +9,7 @@ import SearchResult from "./pages/SearchResult";
 import Profile from "./pages/Profile";
 import ProfileManager from "./pages/ProfileManager";
 import Navbar from "./components/Navbar";
+import Toast from "./components/Toast";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="profile-manager" element={<ProfileManager />} />
         </Routes>
       </Box>
+      <Toast />
     </>
   );
 }

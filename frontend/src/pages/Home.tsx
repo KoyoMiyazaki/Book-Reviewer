@@ -10,14 +10,16 @@ import {
   Rating,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import axios from "axios";
+import { Close, Twitter } from "@mui/icons-material";
+import axios, { AxiosError } from "axios";
 import Title from "../components/Title";
 import ReviewCard from "../components/ReviewCard";
 import { Review } from "../util/types";
-import { useAppSelector } from "../util/hooks";
-import { Close, Twitter } from "@mui/icons-material";
+import { useAppDispatch, useAppSelector } from "../util/hooks";
+import { setToast } from "../slices/toastSlice";
 
 const Home = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -36,6 +38,7 @@ const Home = () => {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
 
   const getReviews = async () => {
     const token: string | null = localStorage.getItem("jwtToken");
@@ -52,7 +55,14 @@ const Home = () => {
       setReviews(items ? items : []);
       setTotalPages(totalPages ? totalPages : 1);
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
@@ -66,8 +76,21 @@ const Home = () => {
       });
       setDialogOpen(false);
       getReviews();
+      dispatch(
+        setToast({
+          message: "削除しました！",
+          severity: "success",
+        })
+      );
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
@@ -75,6 +98,7 @@ const Home = () => {
     const postData = {
       comment: selectedReview.comment,
       rating: selectedReview.rating,
+      readAt: selectedReview.readAt,
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
@@ -89,8 +113,21 @@ const Home = () => {
       );
       setDialogOpen(false);
       getReviews();
+      dispatch(
+        setToast({
+          message: "更新しました！",
+          severity: "success",
+        })
+      );
     } catch (error) {
-      console.log(error);
+      if (error instanceof AxiosError) {
+        dispatch(
+          setToast({
+            message: error.response?.data.error,
+            severity: "error",
+          })
+        );
+      }
     }
   };
 
@@ -169,15 +206,17 @@ const Home = () => {
           >
             <Grid container rowSpacing={2}>
               <Grid item xs={12}>
-                <IconButton
-                  onClick={handleClose}
-                  sx={{
-                    width: "30px",
-                    height: "30px",
-                  }}
-                >
-                  <Close />
-                </IconButton>
+                <Tooltip title="閉じる">
+                  <IconButton
+                    onClick={handleClose}
+                    sx={{
+                      width: "30px",
+                      height: "30px",
+                    }}
+                  >
+                    <Close />
+                  </IconButton>
+                </Tooltip>
               </Grid>
               <Grid
                 item
@@ -285,21 +324,23 @@ const Home = () => {
               >
                 {"ツイート"}
               </Button>
-              <IconButton
-                onClick={tweetComment}
-                sx={{
-                  display: { md: "none" },
-                  width: "35px",
-                  height: "35px",
-                  color: "white",
-                  backgroundColor: "#1d9bf0",
-                  "&:hover": {
+              <Tooltip title="ツイート">
+                <IconButton
+                  onClick={tweetComment}
+                  sx={{
+                    display: { md: "none" },
+                    width: "35px",
+                    height: "35px",
+                    color: "white",
                     backgroundColor: "#1d9bf0",
-                  },
-                }}
-              >
-                <Twitter />
-              </IconButton>
+                    "&:hover": {
+                      backgroundColor: "#1d9bf0",
+                    },
+                  }}
+                >
+                  <Twitter />
+                </IconButton>
+              </Tooltip>
               <Stack direction="row" spacing={2}>
                 <Button
                   variant="outlined"

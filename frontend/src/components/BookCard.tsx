@@ -8,6 +8,8 @@ const BookCard = ({
   thumbnailLink,
   publishedDate,
   numOfPages,
+  isForSale,
+  buyLink,
   isReviewed,
   setSelectedBook,
   handleClickOpen,
@@ -50,6 +52,8 @@ const BookCard = ({
                 thumbnailLink,
                 publishedDate,
                 numOfPages,
+                isForSale,
+                buyLink,
               });
               handleClickOpen();
             }}
