@@ -79,6 +79,9 @@ func (s Service) SearchBooks(c *gin.Context) ([]entity.ResponseBook, StatusCode,
 		} else {
 			responseBook.IsReviewed = false
 		}
+		responseBook.IsForSale = bookFromGoogleBooks.SaleInfo.IsEbook
+		responseBook.Price = bookFromGoogleBooks.SaleInfo.RetailPrice.Amount
+		responseBook.BuyLink = bookFromGoogleBooks.SaleInfo.BuyLink
 
 		responseBooks = append(responseBooks, responseBook)
 	}
