@@ -17,7 +17,7 @@ import {
 import Title from "../components/Title";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { Book } from "../util/types";
-import { Close } from "@mui/icons-material";
+import { Close, Shop } from "@mui/icons-material";
 import { setToast } from "../slices/toastSlice";
 
 const SearchResult = () => {
@@ -31,6 +31,8 @@ const SearchResult = () => {
     thumbnailLink: "",
     publishedDate: "",
     numOfPages: 0,
+    isForSale: false,
+    buyLink: "",
   });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(3);
@@ -126,6 +128,10 @@ const SearchResult = () => {
     getBooksData();
   }, [location]);
 
+  const buyBook = () => {
+    window.open(selectedBook.buyLink, "_blank");
+  };
+
   return (
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
       <Title title="検索結果" />
@@ -139,6 +145,8 @@ const SearchResult = () => {
                 thumbnailLink={book.thumbnailLink}
                 publishedDate={book.publishedDate}
                 numOfPages={book.numOfPages}
+                isForSale={book.isForSale}
+                buyLink={book.buyLink}
                 isReviewed={book.isReviewed}
                 setSelectedBook={setSelectedBook}
                 handleClickOpen={handleClickOpen}
@@ -242,7 +250,36 @@ const SearchResult = () => {
           </Grid>
         </Grid>
 
-        <DialogActions sx={{ paddingX: 0 }}>
+        <DialogActions sx={{ justifyContent: "space-between", paddingX: 0 }}>
+          {selectedBook.isForSale ? (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<Shop />}
+                onClick={buyBook}
+                sx={{
+                  display: { md: "flex", xs: "none" },
+                  textTransform: "none",
+                }}
+              >
+                {"購入する"}
+              </Button>
+              <IconButton
+                onClick={buyBook}
+                color="primary"
+                sx={{
+                  display: { md: "none" },
+                  width: "35px",
+                  height: "35px",
+                }}
+              >
+                <Shop />
+              </IconButton>
+            </>
+          ) : (
+            <Box></Box>
+          )}
           <Stack direction="row" spacing={2}>
             <Button
               variant="outlined"
