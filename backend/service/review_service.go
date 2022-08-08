@@ -61,8 +61,10 @@ func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, err
 	}
 
 	// ユーザIDをキーに、レビューを取得
-	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, to_char(reviews.read_at, 'YYYY-MM-DD') as read_at, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
-		// SELECT reviews.id, reviews.comment, reviews.rating, to_char(reviews.read_at, 'YYYY-MM-DD') as read_at,
+	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages, to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at, to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
+		// SELECT reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages,
+		//   to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at,
+		//   to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at,
 		//   books.title as book_title, books.author as book_author,
 		//   books.thumbnail_link as book_thumbnail_link,
 		//   books.published_date as book_published_date,
@@ -72,6 +74,11 @@ func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, err
 		// ORDER BY reviews.updated_at DESC
 		// LIMIT 10 OFFSET [10 * (page-1)]
 		return GetReviewsResponse{}, http.StatusNotFound, err
+	}
+	// 読書開始日、完了日が0001-01-01の場合は空文字を格納する
+	for i := range results {
+		results[i].StartReadAt = timeStrCoalesce(results[i].StartReadAt, "")
+		results[i].FinishReadAt = timeStrCoalesce(results[i].FinishReadAt, "")
 	}
 
 	// レビューの総件数を取得
@@ -147,19 +154,37 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	}
 
 	// 文字列→日付オブジェクトへ変換
-	dateLayout := "2006-01-02"
-	convertedReadAt, err := time.Parse(dateLayout, request.ReadAt)
-	if err != nil {
-		return ResponseReview{}, http.StatusBadRequest, err
+	var convertedStartReadAt, convertedFinishReadAt time.Time
+	if request.StartReadAt != "" {
+		dateLayout := "2006-01-02"
+		convertedStartReadAt, err = time.Parse(dateLayout, request.StartReadAt)
+		if err != nil {
+			return ResponseReview{}, http.StatusBadRequest, err
+		}
+	} else {
+		convertedStartReadAt = time.Time{}
+	}
+
+	if request.FinishReadAt != "" {
+		dateLayout := "2006-01-02"
+		convertedFinishReadAt, err = time.Parse(dateLayout, request.FinishReadAt)
+		if err != nil {
+			return ResponseReview{}, http.StatusBadRequest, err
+		}
+	} else {
+		convertedFinishReadAt = time.Time{}
 	}
 
 	// Reviewを新規作成
 	newReview := Review{
-		Comment: request.Comment,
-		Rating:  request.Rating,
-		ReadAt:  convertedReadAt,
-		UserID:  user.ID,
-		BookID:  book.ID,
+		Comment:       request.Comment,
+		Rating:        request.Rating,
+		ReadingStatus: request.ReadingStatus,
+		ReadPages:     request.ReadPages,
+		StartReadAt:   convertedStartReadAt,
+		FinishReadAt:  convertedFinishReadAt,
+		UserID:        user.ID,
+		BookID:        book.ID,
 	}
 
 	if err := db.Create(&newReview).Error; err != nil {
@@ -170,7 +195,10 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	responseReview := ResponseReview{
 		Comment:           newReview.Comment,
 		Rating:            newReview.Rating,
-		ReadAt:            request.ReadAt,
+		ReadingStatus:     newReview.ReadingStatus,
+		ReadPages:         newReview.ReadPages,
+		StartReadAt:       request.StartReadAt,
+		FinishReadAt:      request.FinishReadAt,
 		BookTitle:         book.Title,
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
@@ -231,16 +259,34 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	}
 
 	// 文字列→日付オブジェクトへ変換
-	dateLayout := "2006-01-02"
-	convertedReadAt, err := time.Parse(dateLayout, request.ReadAt)
-	if err != nil {
-		return ResponseReview{}, http.StatusBadRequest, err
+	var convertedStartReadAt, convertedFinishReadAt time.Time
+	if request.StartReadAt != "" {
+		dateLayout := "2006-01-02"
+		convertedStartReadAt, err = time.Parse(dateLayout, request.StartReadAt)
+		if err != nil {
+			return ResponseReview{}, http.StatusBadRequest, err
+		}
+	} else {
+		convertedStartReadAt = time.Time{}
+	}
+
+	if request.FinishReadAt != "" {
+		dateLayout := "2006-01-02"
+		convertedFinishReadAt, err = time.Parse(dateLayout, request.FinishReadAt)
+		if err != nil {
+			return ResponseReview{}, http.StatusBadRequest, err
+		}
+	} else {
+		convertedFinishReadAt = time.Time{}
 	}
 
 	// レビューを更新
 	review.Comment = request.Comment
 	review.Rating = request.Rating
-	review.ReadAt = convertedReadAt
+	review.ReadingStatus = request.ReadingStatus
+	review.ReadPages = request.ReadPages
+	review.StartReadAt = convertedStartReadAt
+	review.FinishReadAt = convertedFinishReadAt
 	if err := db.Save(&review).Error; err != nil {
 		return ResponseReview{}, http.StatusInternalServerError, err
 	}
@@ -255,7 +301,10 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	responseReview := ResponseReview{
 		Comment:           review.Comment,
 		Rating:            review.Rating,
-		ReadAt:            request.ReadAt,
+		ReadingStatus:     review.ReadingStatus,
+		ReadPages:         review.ReadPages,
+		StartReadAt:       request.StartReadAt,
+		FinishReadAt:      request.FinishReadAt,
 		BookTitle:         book.Title,
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
@@ -360,28 +409,28 @@ func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusC
 	formattedYear := fmt.Sprintf("%04d", year)
 	// 対象月の読んだ書籍数を取得
 	var numOfReadBooksOfMonth int64
-	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.read_at between ? and ?", user.ID, startDateOfMonth, endDateOfMonth).Count(&numOfReadBooksOfMonth).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.finish_read_at between ? and ?", user.ID, startDateOfMonth, endDateOfMonth).Count(&numOfReadBooksOfMonth).Error; err != nil {
 		// SELECT reviews.user_id FROM reviews JOIN books ON reviews.book_id = books.id
-		// WHERE reviews.user_id = [user.ID] AND reviews.read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
+		// WHERE reviews.user_id = [user.ID] AND reviews.finish_read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
 	}
 
 	// 対象年の読んだ書籍数を取得
 	var numOfReadBooksOfYear int64
-	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.read_at between ? and ?", user.ID, fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear)).Count(&numOfReadBooksOfYear).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.finish_read_at between ? and ?", user.ID, fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear)).Count(&numOfReadBooksOfYear).Error; err != nil {
 		// SELECT reviews.user_id FROM reviews JOIN books ON reviews.book_id = books.id
-		// WHERE reviews.user_id = [user.ID] AND reviews.read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
+		// WHERE reviews.user_id = [user.ID] AND reviews.finish_read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
 	}
 
 	// 対象月の読んだページ数を取得
 	var numOfReadPagesOfMonth int64
-	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.read_at between ? and ?", startDateOfMonth, endDateOfMonth)
+	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.finish_read_at between ? and ?", startDateOfMonth, endDateOfMonth)
 	if err := db.Table("(?) as x", subQuery).Select("sum(x.num_of_pages) as num_of_read_pages").Group("x.user_id").Having("x.user_id = ?", user.ID).Find(&numOfReadPagesOfMonth).Error; err != nil {
 		// SELECT sum(x.num_of_pages) AS num_Of_read_pages
 		// FROM (
 		// 	SELECT reviews.user_id, books.num_of_pages FROM reviews JOIN books ON reviews.book_id = books.id
-		// 	WHERE read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
+		// 	WHERE finish_read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
 		// ) AS x
 		// GROUP BY x.user_id HAVING x.user_id = [user.ID];
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
@@ -389,12 +438,12 @@ func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusC
 
 	// 対象年の読んだページ数を取得
 	var numOfReadPagesOfYear int64
-	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.read_at between ? and ?", fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear))
+	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.finish_read_at between ? and ?", fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear))
 	if err := db.Table("(?) as x", subQuery).Select("sum(x.num_of_pages) as num_of_read_pages").Group("x.user_id").Having("x.user_id = ?", user.ID).Find(&numOfReadPagesOfYear).Error; err != nil {
 		// SELECT sum(x.num_of_pages) AS num_Of_read_pages
 		// FROM (
 		// 	SELECT reviews.user_id, books.num_of_pages FROM reviews JOIN books ON reviews.book_id = books.id
-		// 	WHERE read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
+		// 	WHERE finish_read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
 		// ) AS x
 		// GROUP BY x.user_id HAVING x.user_id = [user.ID];
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
@@ -409,6 +458,15 @@ func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusC
 	}
 
 	return getReviewStatsResponse, http.StatusOK, nil
+}
+
+// 日付文字列が0001-01-01の場合はデフォルト値を、そうでない場合は元の値を返す
+func timeStrCoalesce(timeStrArg, defaultTimeStr string) string {
+	if timeStrArg != "0001-01-01" {
+		return timeStrArg
+	} else {
+		return defaultTimeStr
+	}
 }
 
 // 対象月の最初と最後の日付を、YYYY-MM-DDの形式でそれぞれ返却する

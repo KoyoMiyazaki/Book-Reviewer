@@ -1,12 +1,23 @@
 import React from "react";
-import { Box, Button, Paper, Rating, Stack, Typography } from "@mui/material";
-import { ReviewCardProps } from "../util/types";
+import {
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Rating,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { ReviewCardProps, Status } from "../util/types";
 
 const ReviewCard = ({
   id,
   comment,
   rating,
-  readAt,
+  readingStatus,
+  readPages,
+  startReadAt,
+  finishReadAt,
   bookTitle,
   bookAuthor,
   bookThumbnailLink,
@@ -23,31 +34,56 @@ const ReviewCard = ({
   return (
     <Paper
       elevation={3}
-      sx={{ maxWidth: { md: "400px", xs: "100%" }, padding: "0.5rem" }}
+      sx={{
+        maxWidth: { md: "400px", xs: "100%" },
+        padding: "0.5rem",
+      }}
     >
       <Stack direction="column" spacing={2}>
         <Stack direction="row" spacing={2}>
-          <img src={bookThumbnailLink} alt={bookTitle} height={150} />
-          <Stack spacing={1} direction="column" sx={{ width: "100%" }}>
-            <Box sx={{ borderBottom: "1px solid #CCC" }}>
-              <Typography variant="body1" component="p" fontWeight={600}>
-                {bookTitle}
+          <img src={bookThumbnailLink} alt={bookTitle} height={175} />
+          <Stack spacing={0.5} direction="column" sx={{ width: "100%" }}>
+            <Typography
+              variant="body1"
+              component="p"
+              fontWeight={600}
+              sx={{ borderBottom: "1px solid #CCC" }}
+            >
+              {bookTitle}
+            </Typography>
+            <Box>
+              <Chip
+                label={readingStatus}
+                color={readingStatus === Status.Finish ? "error" : "primary"}
+                size="small"
+              />
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"読んだページ数:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {`著者: ${bookAuthor}`}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {`出版日: ${bookPublishedDate}`}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {`ページ数: ${bookNumOfPages}`}
+                {readPages}
               </Typography>
             </Box>
             <Box>
-              <Typography variant="body2" color="text.secondary">
-                {`読んだ日: ${readAt}`}
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"読み始めた日:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
+                {startReadAt}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"読み終わった日:"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {finishReadAt}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
                 {"評価:"}
               </Typography>
               <Rating
@@ -57,7 +93,9 @@ const ReviewCard = ({
                 precision={0.5}
                 readOnly
               />
-              <Typography variant="body2" color="text.secondary">
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
                 {"コメント:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -74,7 +112,10 @@ const ReviewCard = ({
               id,
               comment,
               rating,
-              readAt,
+              readingStatus,
+              readPages,
+              startReadAt,
+              finishReadAt,
               bookTitle,
               bookAuthor,
               bookThumbnailLink,

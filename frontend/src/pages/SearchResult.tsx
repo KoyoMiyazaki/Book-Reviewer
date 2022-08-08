@@ -9,7 +9,10 @@ import {
   DialogActions,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Rating,
+  Select,
   Stack,
   TextField,
   Tooltip,
@@ -17,7 +20,7 @@ import {
 } from "@mui/material";
 import Title from "../components/Title";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
-import { Book } from "../util/types";
+import { Book, Status } from "../util/types";
 import { Close, Shop } from "@mui/icons-material";
 import { setToast } from "../slices/toastSlice";
 
@@ -38,7 +41,10 @@ const SearchResult = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [ratingValue, setRatingValue] = useState<number>(3);
   const [reviewComment, setReviewComment] = useState<string>("");
-  const [readAt, setReadAt] = useState<string>("");
+  const [readingStatus, setReadingStatus] = useState<Status>(Status.Reading);
+  const [readPages, setReadPages] = useState<number>(0);
+  const [startReadAt, setStartReadAt] = useState<string>("");
+  const [finishReadAt, setFinishReadAt] = useState<string>("");
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
 
@@ -57,7 +63,10 @@ const SearchResult = () => {
     const postData = {
       comment: reviewComment,
       rating: ratingValue,
-      readAt: readAt,
+      readingStatus: readingStatus,
+      readPages: readPages,
+      startReadAt: startReadAt,
+      finishReadAt: finishReadAt,
       userEmail: user?.email,
       bookTitle: selectedBook.title,
       bookAuthor: selectedBook.author,
@@ -196,7 +205,10 @@ const SearchResult = () => {
             />
           </Grid>
           <Grid item md={9} xs={12}>
-            <Stack direction="column">
+            <Stack
+              direction="column"
+              sx={{ borderBottom: { md: "none", xs: "1px solid #CCC" } }}
+            >
               <Typography variant="body1" component="p" fontWeight={600}>
                 {selectedBook.title}
               </Typography>
@@ -214,17 +226,61 @@ const SearchResult = () => {
           <Grid item xs={12}>
             <Stack direction="column" spacing={2}>
               <Box>
+                <InputLabel id="status-select">ステータス</InputLabel>
+                <Select
+                  labelId="status-select"
+                  id="status-select"
+                  value={readingStatus}
+                  label="ステータス"
+                  onChange={(event) => {
+                    setReadingStatus(event.target.value as Status);
+                  }}
+                >
+                  <MenuItem value={Status.Reading}>{Status.Reading}</MenuItem>
+                  <MenuItem value={Status.Finish}>{Status.Finish}</MenuItem>
+                </Select>
+              </Box>
+              <Box>
                 <Typography variant="body2" color="text.secondary">
-                  {"読んだ日"}
+                  {"読んだページ数"}
                 </Typography>
                 <TextField
-                  type="date"
-                  value={readAt}
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={readPages}
                   onChange={(event) => {
-                    setReadAt(event.target.value);
+                    setReadPages(Number(event.target.value));
                   }}
                 />
               </Box>
+              <Stack direction="row" spacing={2}>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {"読み始めた日"}
+                  </Typography>
+                  <TextField
+                    type="date"
+                    value={startReadAt}
+                    onChange={(event) => {
+                      setStartReadAt(event.target.value);
+                    }}
+                  />
+                </Box>
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    {"読み終わった日"}
+                  </Typography>
+                  <TextField
+                    type="date"
+                    value={finishReadAt}
+                    onChange={(event) => {
+                      setFinishReadAt(event.target.value);
+                    }}
+                  />
+                </Box>
+              </Stack>
               <Box>
                 <Typography variant="body2" color="text.secondary">
                   {"評価"}

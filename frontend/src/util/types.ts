@@ -12,13 +12,22 @@ export interface Review {
   id: number;
   comment: string;
   rating: number;
-  readAt: string;
+  readingStatus: Status;
+  readPages: number;
+  startReadAt: string;
+  finishReadAt: string;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
   bookPublishedDate: string;
   bookNumOfPages: number;
 }
+
+export const Status = {
+  Reading: "Reading",
+  Finish: "Finish",
+} as const;
+export type Status = typeof Status[keyof typeof Status];
 
 export interface LoginInput {
   email: string;
@@ -49,7 +58,10 @@ export interface ReviewCardProps {
   id: number;
   comment: string;
   rating: number;
-  readAt: string;
+  readingStatus: Status;
+  readPages: number;
+  startReadAt: string;
+  finishReadAt: string;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
