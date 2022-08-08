@@ -76,7 +76,7 @@ func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, err
 		return GetReviewsResponse{}, http.StatusNotFound, err
 	}
 	// 読書開始日、完了日が0001-01-01の場合は空文字を格納する
-	for i, _ := range results {
+	for i := range results {
 		results[i].StartReadAt = timeStrCoalesce(results[i].StartReadAt, "")
 		results[i].FinishReadAt = timeStrCoalesce(results[i].FinishReadAt, "")
 	}
@@ -405,28 +405,28 @@ func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusC
 	formattedYear := fmt.Sprintf("%04d", year)
 	// 対象月の読んだ書籍数を取得
 	var numOfReadBooksOfMonth int64
-	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.read_at between ? and ?", user.ID, startDateOfMonth, endDateOfMonth).Count(&numOfReadBooksOfMonth).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.finish_read_at between ? and ?", user.ID, startDateOfMonth, endDateOfMonth).Count(&numOfReadBooksOfMonth).Error; err != nil {
 		// SELECT reviews.user_id FROM reviews JOIN books ON reviews.book_id = books.id
-		// WHERE reviews.user_id = [user.ID] AND reviews.read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
+		// WHERE reviews.user_id = [user.ID] AND reviews.finish_read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
 	}
 
 	// 対象年の読んだ書籍数を取得
 	var numOfReadBooksOfYear int64
-	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.read_at between ? and ?", user.ID, fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear)).Count(&numOfReadBooksOfYear).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.user_id").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? and reviews.finish_read_at between ? and ?", user.ID, fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear)).Count(&numOfReadBooksOfYear).Error; err != nil {
 		// SELECT reviews.user_id FROM reviews JOIN books ON reviews.book_id = books.id
-		// WHERE reviews.user_id = [user.ID] AND reviews.read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
+		// WHERE reviews.user_id = [user.ID] AND reviews.finish_read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
 	}
 
 	// 対象月の読んだページ数を取得
 	var numOfReadPagesOfMonth int64
-	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.read_at between ? and ?", startDateOfMonth, endDateOfMonth)
+	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.finish_read_at between ? and ?", startDateOfMonth, endDateOfMonth)
 	if err := db.Table("(?) as x", subQuery).Select("sum(x.num_of_pages) as num_of_read_pages").Group("x.user_id").Having("x.user_id = ?", user.ID).Find(&numOfReadPagesOfMonth).Error; err != nil {
 		// SELECT sum(x.num_of_pages) AS num_Of_read_pages
 		// FROM (
 		// 	SELECT reviews.user_id, books.num_of_pages FROM reviews JOIN books ON reviews.book_id = books.id
-		// 	WHERE read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
+		// 	WHERE finish_read_at BETWEEN ['YYYY-MM-01'] AND ['YYYY-MM-[28|29|30|31]']
 		// ) AS x
 		// GROUP BY x.user_id HAVING x.user_id = [user.ID];
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
@@ -434,12 +434,12 @@ func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusC
 
 	// 対象年の読んだページ数を取得
 	var numOfReadPagesOfYear int64
-	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.read_at between ? and ?", fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear))
+	subQuery = db.Model(&Review{}).Select("reviews.user_id, books.num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.finish_read_at between ? and ?", fmt.Sprintf("%s-01-01", formattedYear), fmt.Sprintf("%s-12-31", formattedYear))
 	if err := db.Table("(?) as x", subQuery).Select("sum(x.num_of_pages) as num_of_read_pages").Group("x.user_id").Having("x.user_id = ?", user.ID).Find(&numOfReadPagesOfYear).Error; err != nil {
 		// SELECT sum(x.num_of_pages) AS num_Of_read_pages
 		// FROM (
 		// 	SELECT reviews.user_id, books.num_of_pages FROM reviews JOIN books ON reviews.book_id = books.id
-		// 	WHERE read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
+		// 	WHERE finish_read_at BETWEEN ['YYYY-01-01'] AND ['YYYY-12-31']
 		// ) AS x
 		// GROUP BY x.user_id HAVING x.user_id = [user.ID];
 		return GetReviewStatsResponse{}, http.StatusNotFound, err
