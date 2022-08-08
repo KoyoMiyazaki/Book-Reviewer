@@ -7,7 +7,8 @@ type Review struct {
 	ID            uint   `gorm:"primaryKey"`
 	Comment       string `gorm:"type:text"`
 	Rating        float64
-	ReadingStatus string    `gorm:"type:varchar"`
+	ReadingStatus string `gorm:"type:varchar"`
+	ReadPages     uint
 	StartReadAt   time.Time `gorm:"type:timestamp"`
 	FinishReadAt  time.Time `gorm:"type:timestamp"`
 	CreatedAt     int64     `gorm:"autoCreateTime"`
@@ -23,6 +24,7 @@ type CreateReviewRequest struct {
 	Comment           string  `json:"comment" validate:"required"`
 	Rating            float64 `json:"rating" validate:"required,gte=0.5,lte=5.0"`
 	ReadingStatus     string  `json:"readingStatus" validate:"required"`
+	ReadPages         uint    `json:"readPages"`
 	StartReadAt       string  `json:"startReadAt"`
 	FinishReadAt      string  `json:"finishReadAt"`
 	BookTitle         string  `json:"bookTitle" validate:"required"`
@@ -37,6 +39,7 @@ type UpdateReviewRequest struct {
 	Comment       string  `json:"comment" validate:"required"`
 	Rating        float64 `json:"rating" validate:"required,gte=0.5,lte=5.0"`
 	ReadingStatus string  `json:"readingStatus" validate:"required"`
+	ReadPages     uint    `json:"readPages"`
 	StartReadAt   string  `json:"startReadAt"`
 	FinishReadAt  string  `json:"finishReadAt"`
 }
@@ -53,6 +56,7 @@ type ResponseReview struct {
 	Comment           string  `json:"comment"`
 	Rating            float64 `json:"rating"`
 	ReadingStatus     string  `json:"readingStatus"`
+	ReadPages         uint    `json:"readPages"`
 	StartReadAt       string  `json:"startReadAt"`
 	FinishReadAt      string  `json:"finishReadAt"`
 	BookTitle         string  `json:"bookTitle"`
