@@ -203,7 +203,10 @@ const SearchResult = () => {
             />
           </Grid>
           <Grid item md={9} xs={12}>
-            <Stack direction="column">
+            <Stack
+              direction="column"
+              sx={{ borderBottom: { md: "none", xs: "1px solid #CCC" } }}
+            >
               <Typography variant="body1" component="p" fontWeight={600}>
                 {selectedBook.title}
               </Typography>
