@@ -13,6 +13,7 @@ export interface Review {
   comment: string;
   rating: number;
   readingStatus: Status;
+  readPages: number;
   startReadAt: string;
   finishReadAt: string;
   bookTitle: string;
@@ -58,6 +59,7 @@ export interface ReviewCardProps {
   comment: string;
   rating: number;
   readingStatus: Status;
+  readPages: number;
   startReadAt: string;
   finishReadAt: string;
   bookTitle: string;
