@@ -6,8 +6,11 @@ import {
   DialogActions,
   Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   Pagination,
   Rating,
+  Select,
   Stack,
   TextField,
   Tooltip,
@@ -20,6 +23,7 @@ import ReviewCard from "../components/ReviewCard";
 import { Review } from "../util/types";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { setToast } from "../slices/toastSlice";
+import { Status } from "../util/types";
 
 const Home = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -27,7 +31,9 @@ const Home = () => {
     id: -1,
     comment: "",
     rating: 0,
-    readAt: "",
+    readingStatus: Status.Reading,
+    startReadAt: "",
+    finishReadAt: "",
     bookTitle: "",
     bookAuthor: "",
     bookThumbnailLink: "",
@@ -98,7 +104,9 @@ const Home = () => {
     const postData = {
       comment: selectedReview.comment,
       rating: selectedReview.rating,
-      readAt: selectedReview.readAt,
+      readingStatus: selectedReview.readingStatus,
+      startReadAt: selectedReview.startReadAt,
+      finishReadAt: selectedReview.finishReadAt,
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
@@ -167,7 +175,9 @@ const Home = () => {
                     id={review.id}
                     comment={review.comment}
                     rating={review.rating}
-                    readAt={review.readAt}
+                    readingStatus={review.readingStatus}
+                    startReadAt={review.startReadAt}
+                    finishReadAt={review.finishReadAt}
                     bookTitle={review.bookTitle}
                     bookAuthor={review.bookAuthor}
                     bookThumbnailLink={review.bookThumbnailLink}
@@ -252,22 +262,63 @@ const Home = () => {
               <Grid item xs={12}>
                 <Stack direction="column" spacing={2}>
                   <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {"読んだ日"}
-                    </Typography>
-                    <TextField
-                      type="date"
-                      value={selectedReview.readAt}
+                    <InputLabel id="status-select">ステータス</InputLabel>
+                    <Select
+                      labelId="status-select"
+                      id="status-select"
+                      value={selectedReview.readingStatus}
+                      label="ステータス"
                       onChange={(event) => {
                         setSelectedReview((prev) => {
                           return {
                             ...prev,
-                            readAt: event.target.value,
+                            readingStatus: event.target.value as Status,
                           };
                         });
                       }}
-                    />
+                    >
+                      <MenuItem value={Status.Reading}>
+                        {Status.Reading}
+                      </MenuItem>
+                      <MenuItem value={Status.Finish}>{Status.Finish}</MenuItem>
+                    </Select>
                   </Box>
+                  <Stack direction="row" spacing={2}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {"読み始めた日"}
+                      </Typography>
+                      <TextField
+                        type="date"
+                        value={selectedReview.startReadAt}
+                        onChange={(event) => {
+                          setSelectedReview((prev) => {
+                            return {
+                              ...prev,
+                              startReadAt: event.target.value,
+                            };
+                          });
+                        }}
+                      />
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        {"読み終わった日"}
+                      </Typography>
+                      <TextField
+                        type="date"
+                        value={selectedReview.finishReadAt}
+                        onChange={(event) => {
+                          setSelectedReview((prev) => {
+                            return {
+                              ...prev,
+                              finishReadAt: event.target.value,
+                            };
+                          });
+                        }}
+                      />
+                    </Box>
+                  </Stack>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
                       {"評価"}

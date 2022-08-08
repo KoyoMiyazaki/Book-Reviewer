@@ -1,12 +1,22 @@
 import React from "react";
-import { Box, Button, Paper, Rating, Stack, Typography } from "@mui/material";
-import { ReviewCardProps } from "../util/types";
+import {
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Rating,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { ReviewCardProps, Status } from "../util/types";
 
 const ReviewCard = ({
   id,
   comment,
   rating,
-  readAt,
+  readingStatus,
+  startReadAt,
+  finishReadAt,
   bookTitle,
   bookAuthor,
   bookThumbnailLink,
@@ -23,7 +33,10 @@ const ReviewCard = ({
   return (
     <Paper
       elevation={3}
-      sx={{ maxWidth: { md: "400px", xs: "100%" }, padding: "0.5rem" }}
+      sx={{
+        maxWidth: { md: "400px", xs: "100%" },
+        padding: "0.5rem",
+      }}
     >
       <Stack direction="column" spacing={2}>
         <Stack direction="row" spacing={2}>
@@ -44,8 +57,16 @@ const ReviewCard = ({
               </Typography>
             </Box>
             <Box>
+              <Chip
+                label={readingStatus}
+                color={readingStatus === Status.Finish ? "error" : "primary"}
+                size="small"
+              />
               <Typography variant="body2" color="text.secondary">
-                {`読んだ日: ${readAt}`}
+                {`読み始めた日: ${startReadAt}`}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {`読み終わった日: ${finishReadAt}`}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {"評価:"}
@@ -74,7 +95,9 @@ const ReviewCard = ({
               id,
               comment,
               rating,
-              readAt,
+              readingStatus,
+              startReadAt,
+              finishReadAt,
               bookTitle,
               bookAuthor,
               bookThumbnailLink,
