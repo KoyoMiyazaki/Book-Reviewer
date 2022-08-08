@@ -32,6 +32,7 @@ const Home = () => {
     comment: "",
     rating: 0,
     readingStatus: Status.Reading,
+    readPages: 0,
     startReadAt: "",
     finishReadAt: "",
     bookTitle: "",
@@ -105,6 +106,7 @@ const Home = () => {
       comment: selectedReview.comment,
       rating: selectedReview.rating,
       readingStatus: selectedReview.readingStatus,
+      readPages: selectedReview.readPages,
       startReadAt: selectedReview.startReadAt,
       finishReadAt: selectedReview.finishReadAt,
     };
@@ -176,6 +178,7 @@ const Home = () => {
                     comment={review.comment}
                     rating={review.rating}
                     readingStatus={review.readingStatus}
+                    readPages={review.readPages}
                     startReadAt={review.startReadAt}
                     finishReadAt={review.finishReadAt}
                     bookTitle={review.bookTitle}
@@ -285,6 +288,26 @@ const Home = () => {
                       </MenuItem>
                       <MenuItem value={Status.Finish}>{Status.Finish}</MenuItem>
                     </Select>
+                  </Box>
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {"読んだページ数"}
+                    </Typography>
+                    <TextField
+                      type="number"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      value={selectedReview.readPages}
+                      onChange={(event) => {
+                        setSelectedReview((prev) => {
+                          return {
+                            ...prev,
+                            readPages: Number(event.target.value),
+                          };
+                        });
+                      }}
+                    />
                   </Box>
                   <Stack direction="row" spacing={2}>
                     <Box>

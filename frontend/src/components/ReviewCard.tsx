@@ -15,6 +15,7 @@ const ReviewCard = ({
   comment,
   rating,
   readingStatus,
+  readPages,
   startReadAt,
   finishReadAt,
   bookTitle,
@@ -56,6 +57,14 @@ const ReviewCard = ({
                 color={readingStatus === Status.Finish ? "error" : "primary"}
                 size="small"
               />
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"読んだページ数:"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {readPages}
+              </Typography>
             </Box>
             <Box>
               <Typography variant="body2" component="p" fontWeight={600}>
@@ -104,6 +113,7 @@ const ReviewCard = ({
               comment,
               rating,
               readingStatus,
+              readPages,
               startReadAt,
               finishReadAt,
               bookTitle,

@@ -42,6 +42,7 @@ const SearchResult = () => {
   const [ratingValue, setRatingValue] = useState<number>(3);
   const [reviewComment, setReviewComment] = useState<string>("");
   const [readingStatus, setReadingStatus] = useState<Status>(Status.Reading);
+  const [readPages, setReadPages] = useState<number>(0);
   const [startReadAt, setStartReadAt] = useState<string>("");
   const [finishReadAt, setFinishReadAt] = useState<string>("");
   const user = useAppSelector((state) => state.auth.user);
@@ -63,6 +64,7 @@ const SearchResult = () => {
       comment: reviewComment,
       rating: ratingValue,
       readingStatus: readingStatus,
+      readPages: readPages,
       startReadAt: startReadAt,
       finishReadAt: finishReadAt,
       userEmail: user?.email,
@@ -237,6 +239,21 @@ const SearchResult = () => {
                   <MenuItem value={Status.Reading}>{Status.Reading}</MenuItem>
                   <MenuItem value={Status.Finish}>{Status.Finish}</MenuItem>
                 </Select>
+              </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {"読んだページ数"}
+                </Typography>
+                <TextField
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={readPages}
+                  onChange={(event) => {
+                    setReadPages(Number(event.target.value));
+                  }}
+                />
               </Box>
               <Stack direction="row" spacing={2}>
                 <Box>
