@@ -40,35 +40,41 @@ const ReviewCard = ({
     >
       <Stack direction="column" spacing={2}>
         <Stack direction="row" spacing={2}>
-          <img src={bookThumbnailLink} alt={bookTitle} height={150} />
-          <Stack spacing={1} direction="column" sx={{ width: "100%" }}>
-            <Box sx={{ borderBottom: "1px solid #CCC" }}>
-              <Typography variant="body1" component="p" fontWeight={600}>
-                {bookTitle}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {`著者: ${bookAuthor}`}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {`出版日: ${bookPublishedDate}`}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {`ページ数: ${bookNumOfPages}`}
-              </Typography>
-            </Box>
+          <img src={bookThumbnailLink} alt={bookTitle} height={175} />
+          <Stack spacing={0.5} direction="column" sx={{ width: "100%" }}>
+            <Typography
+              variant="body1"
+              component="p"
+              fontWeight={600}
+              sx={{ borderBottom: "1px solid #CCC" }}
+            >
+              {bookTitle}
+            </Typography>
             <Box>
               <Chip
                 label={readingStatus}
                 color={readingStatus === Status.Finish ? "error" : "primary"}
                 size="small"
               />
-              <Typography variant="body2" color="text.secondary">
-                {`読み始めた日: ${startReadAt}`}
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"読み始めた日:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {`読み終わった日: ${finishReadAt}`}
+                {startReadAt}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"読み終わった日:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
+                {finishReadAt}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
                 {"評価:"}
               </Typography>
               <Rating
@@ -78,7 +84,9 @@ const ReviewCard = ({
                 precision={0.5}
                 readOnly
               />
-              <Typography variant="body2" color="text.secondary">
+            </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
                 {"コメント:"}
               </Typography>
               <Typography variant="body2" color="text.secondary">
