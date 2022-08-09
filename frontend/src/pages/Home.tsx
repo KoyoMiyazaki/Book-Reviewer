@@ -16,14 +16,16 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { Close, Twitter } from "@mui/icons-material";
 import axios, { AxiosError } from "axios";
+import { StatusCodes } from "http-status-codes";
 import Title from "../components/Title";
 import ReviewCard from "../components/ReviewCard";
-import { Review } from "../util/types";
-import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { setToast } from "../slices/toastSlice";
-import { Status } from "../util/types";
+import { logout } from "../slices/authSlice";
+import { useAppDispatch, useAppSelector } from "../util/hooks";
+import { Review, Status } from "../util/types";
 
 const Home = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -46,6 +48,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const getReviews = async () => {
     const token: string | null = localStorage.getItem("jwtToken");
@@ -63,12 +66,23 @@ const Home = () => {
       setTotalPages(totalPages ? totalPages : 1);
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "ログインしてください",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };
@@ -91,12 +105,23 @@ const Home = () => {
       );
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "ログインしてください",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };
@@ -131,12 +156,23 @@ const Home = () => {
       );
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "ログインしてください",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };

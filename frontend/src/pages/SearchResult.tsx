@@ -23,6 +23,8 @@ import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { Book, Status } from "../util/types";
 import { Close, Shop } from "@mui/icons-material";
 import { setToast } from "../slices/toastSlice";
+import { StatusCodes } from "http-status-codes";
+import { logout } from "../slices/authSlice";
 
 const SearchResult = () => {
   const location = useLocation();
@@ -90,12 +92,23 @@ const SearchResult = () => {
       navigate("/");
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "ログインしてください",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };
@@ -124,12 +137,23 @@ const SearchResult = () => {
       setBooks(data.data);
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "ログインしてください",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };
