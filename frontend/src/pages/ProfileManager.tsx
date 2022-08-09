@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { login, logout } from "../slices/authSlice";
 import { UpdateAccountInput } from "../util/types";
 import { setToast } from "../slices/toastSlice";
+import { StatusCodes } from "http-status-codes";
 
 const ProfileManager = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -69,12 +70,23 @@ const ProfileManager = () => {
       navigate("/");
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "Please login",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };
@@ -98,12 +110,23 @@ const ProfileManager = () => {
       navigate("/");
     } catch (error) {
       if (error instanceof AxiosError) {
-        dispatch(
-          setToast({
-            message: error.response?.data.error,
-            severity: "error",
-          })
-        );
+        if (error.response?.status === StatusCodes.UNAUTHORIZED) {
+          dispatch(
+            setToast({
+              message: "Please login",
+              severity: "error",
+            })
+          );
+          dispatch(logout());
+          navigate("/login");
+        } else {
+          dispatch(
+            setToast({
+              message: error.response?.data.error,
+              severity: "error",
+            })
+          );
+        }
       }
     }
   };
