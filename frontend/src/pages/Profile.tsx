@@ -68,7 +68,7 @@ const Profile = () => {
         if (error.response?.status === StatusCodes.UNAUTHORIZED) {
           dispatch(
             setToast({
-              message: "Please login",
+              message: "ログインしてください",
               severity: "error",
             })
           );
