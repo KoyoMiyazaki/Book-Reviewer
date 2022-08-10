@@ -27,6 +27,7 @@ const ProfileManager = () => {
     newPassword: "",
   });
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [emailWhenDelete, setEmailWhenDelete] = useState<string>("");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -136,6 +137,7 @@ const ProfileManager = () => {
   };
 
   const handleClose = () => {
+    setEmailWhenDelete("");
     setDialogOpen(false);
   };
 
@@ -209,6 +211,16 @@ const ProfileManager = () => {
               "アカウントを削除するとあなたのレビュー内容などが全て削除されます。\n本当に削除しますか？"
             }
           </DialogContentText>
+          <TextField
+            required
+            placeholder="削除する場合はメールアドレスを入力"
+            name="email"
+            value={emailWhenDelete}
+            onChange={(e) => {
+              setEmailWhenDelete(e.target.value);
+            }}
+            sx={{ width: "100%", marginTop: "1rem" }}
+          />
         </DialogContent>
         <DialogActions>
           <Button
@@ -221,6 +233,7 @@ const ProfileManager = () => {
           <Button
             color="error"
             onClick={deleteAccount}
+            disabled={user?.email !== emailWhenDelete}
             sx={{ textTransform: "none" }}
           >
             {"削除する"}
