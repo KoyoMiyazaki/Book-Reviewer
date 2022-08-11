@@ -7,8 +7,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
   Stack,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import Title from "../components/Title";
@@ -17,6 +19,7 @@ import { login, logout } from "../slices/authSlice";
 import { UpdateAccountInput } from "../util/types";
 import { setToast } from "../slices/toastSlice";
 import { StatusCodes } from "http-status-codes";
+import { ArrowBackIos } from "@mui/icons-material";
 
 const ProfileManager = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -143,6 +146,17 @@ const ProfileManager = () => {
 
   return (
     <Stack direction="column" spacing={2} maxWidth="600px" margin="0 auto">
+      <Tooltip title="戻る">
+        <IconButton
+          onClick={() => navigate("/profile")}
+          sx={{
+            width: "30px",
+            height: "30px",
+          }}
+        >
+          <ArrowBackIos />
+        </IconButton>
+      </Tooltip>
       {/* ユーザ更新 */}
       <form onSubmit={handleSubmit}>
         <Stack direction="column" spacing={2}>
