@@ -250,10 +250,10 @@ const SearchResult = () => {
           <Grid item xs={12}>
             <Stack direction="column" spacing={2}>
               <Box>
-                <InputLabel id="status-select">ステータス</InputLabel>
+                <Typography variant="body2" color="text.secondary">
+                  {"ステータス"}
+                </Typography>
                 <Select
-                  labelId="status-select"
-                  id="status-select"
                   value={readingStatus}
                   label="ステータス"
                   onChange={(event) => {
