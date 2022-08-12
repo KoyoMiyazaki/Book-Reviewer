@@ -325,6 +325,7 @@ const SearchResult = () => {
                 multiline
                 rows={4}
                 value={reviewComment}
+                required
                 onChange={(event) => {
                   setReviewComment(event.target.value);
                 }}

@@ -405,6 +405,7 @@ const Home = () => {
                     rows={4}
                     name="comment"
                     value={selectedReview.comment}
+                    required
                     onChange={(event) => {
                       setSelectedReview((prev) => {
                         return {
