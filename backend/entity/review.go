@@ -11,6 +11,7 @@ type Review struct {
 	ReadPages     uint
 	StartReadAt   time.Time `gorm:"type:timestamp"`
 	FinishReadAt  time.Time `gorm:"type:timestamp"`
+	Tags          string    `gorm:"type:varchar"`
 	CreatedAt     int64     `gorm:"autoCreateTime"`
 	UpdatedAt     int64     `gorm:"autoUpdateTime"`
 	UserID        uint
@@ -27,6 +28,7 @@ type CreateReviewRequest struct {
 	ReadPages         uint    `json:"readPages"`
 	StartReadAt       string  `json:"startReadAt"`
 	FinishReadAt      string  `json:"finishReadAt"`
+	Tags              string  `json:"tags"`
 	BookTitle         string  `json:"bookTitle" validate:"required"`
 	BookAuthor        string  `json:"bookAuthor" validate:"required"`
 	BookThumbnailLink string  `json:"bookThumbnailLink"`
@@ -42,6 +44,7 @@ type UpdateReviewRequest struct {
 	ReadPages     uint    `json:"readPages"`
 	StartReadAt   string  `json:"startReadAt"`
 	FinishReadAt  string  `json:"finishReadAt"`
+	Tags          string  `json:"tags"`
 }
 
 // 書籍検索レスポンス用構造体
@@ -59,6 +62,7 @@ type ResponseReview struct {
 	ReadPages         uint    `json:"readPages"`
 	StartReadAt       string  `json:"startReadAt"`
 	FinishReadAt      string  `json:"finishReadAt"`
+	Tags              string  `json:"tags"`
 	BookTitle         string  `json:"bookTitle"`
 	BookAuthor        string  `json:"bookAuthor"`
 	BookThumbnailLink string  `json:"bookThumbnailLink"`
