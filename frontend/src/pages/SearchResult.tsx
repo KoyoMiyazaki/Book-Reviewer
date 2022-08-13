@@ -5,10 +5,12 @@ import BookCard from "../components/BookCard";
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   Grid,
   IconButton,
+  InputBase,
   InputLabel,
   MenuItem,
   Rating,
@@ -21,7 +23,7 @@ import {
 import Title from "../components/Title";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { Book, Status } from "../util/types";
-import { Close, Shop } from "@mui/icons-material";
+import { Add, Close, Shop } from "@mui/icons-material";
 import { setToast } from "../slices/toastSlice";
 import { StatusCodes } from "http-status-codes";
 import { logout } from "../slices/authSlice";
@@ -47,6 +49,8 @@ const SearchResult = () => {
   const [readPages, setReadPages] = useState<number>(0);
   const [startReadAt, setStartReadAt] = useState<string>("");
   const [finishReadAt, setFinishReadAt] = useState<string>("");
+  const [tagsInput, setTagsInput] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
 
@@ -57,7 +61,17 @@ const SearchResult = () => {
   const handleClose = () => {
     setRatingValue(3);
     setReviewComment("");
+    setTagsInput("");
+    setTags([]);
     setDialogOpen(false);
+  };
+
+  const handleTagDelete = (id: number) => {
+    setTags(tags.filter((_, idx) => idx !== id));
+  };
+
+  const buyBook = () => {
+    window.open(selectedBook.buyLink, "_blank");
   };
 
   const postReviewComment = async () => {
@@ -69,6 +83,7 @@ const SearchResult = () => {
       readPages: readPages,
       startReadAt: startReadAt,
       finishReadAt: finishReadAt,
+      tags: tags.join(","),
       userEmail: user?.email,
       bookTitle: selectedBook.title,
       bookAuthor: selectedBook.author,
@@ -161,10 +176,6 @@ const SearchResult = () => {
   useEffect(() => {
     getBooksData();
   }, [location]);
-
-  const buyBook = () => {
-    window.open(selectedBook.buyLink, "_blank");
-  };
 
   return (
     <Stack direction="column" maxWidth="1000px" margin="0 auto">
@@ -330,6 +341,46 @@ const SearchResult = () => {
                   setReviewComment(event.target.value);
                 }}
               />
+
+              <Stack direction="row" spacing={1}>
+                <InputBase
+                  placeholder="タグを入力"
+                  inputProps={{ "aria-label": "add tag" }}
+                  name="q"
+                  sx={{
+                    ml: 1,
+                    // flex: 1,
+                    // width: { xs: "120px", sm: "240px" },
+                    width: "200px",
+                    borderBottom: "1px solid black",
+                  }}
+                  value={tagsInput}
+                  onInput={(e: any) => setTagsInput(e.target.value)}
+                />
+                <Tooltip title="タグを追加">
+                  <IconButton
+                    type="submit"
+                    sx={{ p: "10px" }}
+                    aria-label="add"
+                    onClick={() => {
+                      setTagsInput("");
+                      setTags((prev) => [...prev, tagsInput]);
+                    }}
+                  >
+                    <Add />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+
+              <Stack direction="row" spacing={1}>
+                {tags.map((tag, idx) => (
+                  <Chip
+                    key={idx}
+                    label={tag}
+                    onDelete={() => handleTagDelete(idx)}
+                  />
+                ))}
+              </Stack>
             </Stack>
           </Grid>
         </Grid>

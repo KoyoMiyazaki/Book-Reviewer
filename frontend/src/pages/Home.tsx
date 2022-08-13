@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   Grid,
   IconButton,
+  InputBase,
   MenuItem,
   Pagination,
   Rating,
@@ -16,7 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Close, Twitter } from "@mui/icons-material";
+import { Add, Close, Twitter } from "@mui/icons-material";
 import axios, { AxiosError } from "axios";
 import { StatusCodes } from "http-status-codes";
 import Title from "../components/Title";
@@ -36,6 +38,7 @@ const Home = () => {
     readPages: 0,
     startReadAt: "",
     finishReadAt: "",
+    tags: "",
     bookTitle: "",
     bookAuthor: "",
     bookThumbnailLink: "",
@@ -45,6 +48,8 @@ const Home = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [tagsInput, setTagsInput] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -133,6 +138,7 @@ const Home = () => {
       readPages: selectedReview.readPages,
       startReadAt: selectedReview.startReadAt,
       finishReadAt: selectedReview.finishReadAt,
+      tags: tags.join(","),
     };
     const token: string | null = localStorage.getItem("jwtToken");
     try {
@@ -188,6 +194,10 @@ const Home = () => {
     setDialogOpen(false);
   };
 
+  const handleTagDelete = (id: number) => {
+    setTags(tags.filter((_, idx) => idx !== id));
+  };
+
   const tweetComment = () => {
     const tweetContent = `[${selectedReview.bookTitle}]\n${selectedReview.comment}`;
     const encodedTweetContent = encodeURI(tweetContent);
@@ -216,12 +226,14 @@ const Home = () => {
                     readPages={review.readPages}
                     startReadAt={review.startReadAt}
                     finishReadAt={review.finishReadAt}
+                    tags={review.tags}
                     bookTitle={review.bookTitle}
                     bookAuthor={review.bookAuthor}
                     bookThumbnailLink={review.bookThumbnailLink}
                     bookPublishedDate={review.bookPublishedDate}
                     bookNumOfPages={review.bookNumOfPages}
                     setSelectedReview={setSelectedReview}
+                    setTags={setTags}
                     handleClickOpen={handleClickOpen}
                   />
                 </Grid>
@@ -415,6 +427,43 @@ const Home = () => {
                       });
                     }}
                   />
+                  <Stack direction="row" spacing={1}>
+                    <InputBase
+                      placeholder="タグを入力"
+                      inputProps={{ "aria-label": "add tag" }}
+                      name="q"
+                      sx={{
+                        ml: 1,
+                        width: "200px",
+                        borderBottom: "1px solid black",
+                      }}
+                      value={tagsInput}
+                      onInput={(e: any) => setTagsInput(e.target.value)}
+                    />
+                    <Tooltip title="タグを追加">
+                      <IconButton
+                        type="submit"
+                        sx={{ p: "10px" }}
+                        aria-label="add"
+                        onClick={() => {
+                          setTagsInput("");
+                          setTags((prev) => [...prev, tagsInput]);
+                        }}
+                      >
+                        <Add />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
+
+                  <Stack direction="row" spacing={1}>
+                    {tags.map((tag, idx) => (
+                      <Chip
+                        key={idx}
+                        label={tag}
+                        onDelete={() => handleTagDelete(idx)}
+                      />
+                    ))}
+                  </Stack>
                 </Stack>
               </Grid>
             </Grid>

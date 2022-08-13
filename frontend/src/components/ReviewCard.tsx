@@ -18,12 +18,14 @@ const ReviewCard = ({
   readPages,
   startReadAt,
   finishReadAt,
+  tags,
   bookTitle,
   bookAuthor,
   bookThumbnailLink,
   bookPublishedDate,
   bookNumOfPages,
   setSelectedReview,
+  setTags,
   handleClickOpen,
 }: ReviewCardProps) => {
   // 20文字以下のコメントはそのままで、それより多いコメントは最初の20文字と3点リーダーを返却
@@ -102,6 +104,19 @@ const ReviewCard = ({
                 {shortenComment(comment)}
               </Typography>
             </Box>
+            <Box>
+              <Typography variant="body2" component="p" fontWeight={600}>
+                {"タグ:"}
+              </Typography>
+              <Stack direction="row" spacing={1}>
+                {tags !== "" &&
+                  tags
+                    .split(",")
+                    .map((tag, idx) => (
+                      <Chip key={idx} label={tag} size="small" />
+                    ))}
+              </Stack>
+            </Box>
           </Stack>
         </Stack>
         <Button
@@ -116,12 +131,14 @@ const ReviewCard = ({
               readPages,
               startReadAt,
               finishReadAt,
+              tags,
               bookTitle,
               bookAuthor,
               bookThumbnailLink,
               bookPublishedDate,
               bookNumOfPages,
             });
+            setTags(tags.split(","));
             handleClickOpen();
           }}
           sx={{ textTransform: "none" }}
