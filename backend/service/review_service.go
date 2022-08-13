@@ -61,10 +61,11 @@ func (s Service) GetReviews(c *gin.Context) (GetReviewsResponse, StatusCode, err
 	}
 
 	// ユーザIDをキーに、レビューを取得
-	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages, to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at, to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
+	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages, to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at, to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at, reviews.tags, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ?", user.ID).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
 		// SELECT reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages,
 		//   to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at,
 		//   to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at,
+		//   reviews.tags,
 		//   books.title as book_title, books.author as book_author,
 		//   books.thumbnail_link as book_thumbnail_link,
 		//   books.published_date as book_published_date,
@@ -183,6 +184,7 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		ReadPages:     request.ReadPages,
 		StartReadAt:   convertedStartReadAt,
 		FinishReadAt:  convertedFinishReadAt,
+		Tags:          request.Tags,
 		UserID:        user.ID,
 		BookID:        book.ID,
 	}
@@ -199,6 +201,7 @@ func (s Service) CreateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		ReadPages:         newReview.ReadPages,
 		StartReadAt:       request.StartReadAt,
 		FinishReadAt:      request.FinishReadAt,
+		Tags:              newReview.Tags,
 		BookTitle:         book.Title,
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
@@ -287,6 +290,7 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 	review.ReadPages = request.ReadPages
 	review.StartReadAt = convertedStartReadAt
 	review.FinishReadAt = convertedFinishReadAt
+	review.Tags = request.Tags
 	if err := db.Save(&review).Error; err != nil {
 		return ResponseReview{}, http.StatusInternalServerError, err
 	}
@@ -305,6 +309,7 @@ func (s Service) UpdateReview(c *gin.Context) (ResponseReview, StatusCode, error
 		ReadPages:         review.ReadPages,
 		StartReadAt:       request.StartReadAt,
 		FinishReadAt:      request.FinishReadAt,
+		Tags:              review.Tags,
 		BookTitle:         book.Title,
 		BookAuthor:        book.Author,
 		BookThumbnailLink: book.ThumbnailLink,
