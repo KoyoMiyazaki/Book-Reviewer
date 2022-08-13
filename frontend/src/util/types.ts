@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface Book {
   title: string;
   author: string;
@@ -16,6 +18,7 @@ export interface Review {
   readPages: number;
   startReadAt: string;
   finishReadAt: string;
+  tags: string;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
@@ -62,12 +65,14 @@ export interface ReviewCardProps {
   readPages: number;
   startReadAt: string;
   finishReadAt: string;
+  tags: string;
   bookTitle: string;
   bookAuthor: string;
   bookThumbnailLink: string;
   bookPublishedDate: string;
   bookNumOfPages: number;
   setSelectedReview: React.Dispatch<React.SetStateAction<Review>>;
+  setTags: React.Dispatch<React.SetStateAction<string[]>>;
   handleClickOpen: () => void;
 }
 
