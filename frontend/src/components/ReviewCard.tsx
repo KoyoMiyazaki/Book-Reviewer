@@ -110,11 +110,19 @@ const ReviewCard = ({
               </Typography>
               <Stack direction="row" spacing={1}>
                 {tags !== "" &&
-                  tags
-                    .split(",")
-                    .map((tag, idx) => (
-                      <Chip key={idx} label={tag} size="small" />
-                    ))}
+                  tags.split(",").map((tag, idx) => (
+                    <Chip
+                      key={idx}
+                      label={tag}
+                      size="small"
+                      sx={{
+                        maxWidth: "100px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    />
+                  ))}
               </Stack>
             </Box>
           </Stack>
