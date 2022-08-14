@@ -455,15 +455,25 @@ const Home = () => {
                     </Tooltip>
                   </Stack>
 
-                  <Stack direction="row" spacing={1}>
+                  <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                     {tags.map((tag, idx) => (
-                      <Chip
-                        key={idx}
-                        label={tag}
-                        onDelete={() => handleTagDelete(idx)}
-                      />
+                      <Tooltip title={tag} arrow>
+                        <Chip
+                          key={idx}
+                          label={tag}
+                          onDelete={() => handleTagDelete(idx)}
+                          sx={{
+                            maxWidth: "100px",
+                            marginRight: "0.25rem",
+                            marginBottom: "0.5rem",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          }}
+                        />
+                      </Tooltip>
                     ))}
-                  </Stack>
+                  </Box>
                 </Stack>
               </Grid>
             </Grid>

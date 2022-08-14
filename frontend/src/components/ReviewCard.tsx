@@ -6,6 +6,7 @@ import {
   Paper,
   Rating,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { ReviewCardProps, Status } from "../util/types";
@@ -108,22 +109,26 @@ const ReviewCard = ({
               <Typography variant="body2" component="p" fontWeight={600}>
                 {"タグ:"}
               </Typography>
-              <Stack direction="row" spacing={1}>
+              <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                 {tags !== "" &&
                   tags.split(",").map((tag, idx) => (
-                    <Chip
-                      key={idx}
-                      label={tag}
-                      size="small"
-                      sx={{
-                        maxWidth: "100px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    />
+                    <Tooltip title={tag} arrow>
+                      <Chip
+                        key={idx}
+                        label={tag}
+                        size="small"
+                        sx={{
+                          maxWidth: "100px",
+                          marginRight: "0.25rem",
+                          marginBottom: "0.5rem",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      />
+                    </Tooltip>
                   ))}
-              </Stack>
+              </Box>
             </Box>
           </Stack>
         </Stack>
