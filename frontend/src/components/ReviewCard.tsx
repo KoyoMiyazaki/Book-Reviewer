@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -29,6 +30,8 @@ const ReviewCard = ({
   setTags,
   handleClickOpen,
 }: ReviewCardProps) => {
+  const navigate = useNavigate();
+
   // 20文字以下のコメントはそのままで、それより多いコメントは最初の20文字と3点リーダーを返却
   const shortenComment = (comment: string): string => {
     return comment.length <= 20 ? comment : `${comment.slice(0, 20)}...`;
@@ -117,6 +120,7 @@ const ReviewCard = ({
                         key={idx}
                         label={tag}
                         size="small"
+                        onClick={() => navigate(`tags/${tag}`)}
                         sx={{
                           maxWidth: "100px",
                           marginRight: "0.25rem",
