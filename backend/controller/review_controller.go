@@ -119,3 +119,25 @@ func (ctrl Controller) GetReviewStats(c *gin.Context) {
 		c.JSON(http.StatusOK, response)
 	}
 }
+
+// タグ名によるレビューフィルタリング用コントローラ
+func (ctrl Controller) FilterReviewByTag(c *gin.Context) {
+	var s service.Service
+	reviews, statusCode, err := s.FilterReviewByTag(c)
+
+	if err != nil {
+		response := Response{
+			Status: "error",
+			Error:  err.Error(),
+			Data:   []ResponseReview{},
+		}
+		c.JSON(int(statusCode), response)
+	} else {
+		response := Response{
+			Status: "success",
+			Error:  "",
+			Data:   reviews,
+		}
+		c.JSON(http.StatusOK, response)
+	}
+}
