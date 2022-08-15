@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -6,6 +7,7 @@ import {
   Paper,
   Rating,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { ReviewCardProps, Status } from "../util/types";
@@ -28,6 +30,8 @@ const ReviewCard = ({
   setTags,
   handleClickOpen,
 }: ReviewCardProps) => {
+  const navigate = useNavigate();
+
   // 20文字以下のコメントはそのままで、それより多いコメントは最初の20文字と3点リーダーを返却
   const shortenComment = (comment: string): string => {
     return comment.length <= 20 ? comment : `${comment.slice(0, 20)}...`;
@@ -108,14 +112,27 @@ const ReviewCard = ({
               <Typography variant="body2" component="p" fontWeight={600}>
                 {"タグ:"}
               </Typography>
-              <Stack direction="row" spacing={1}>
+              <Box sx={{ display: "flex", flexWrap: "wrap" }}>
                 {tags !== "" &&
-                  tags
-                    .split(",")
-                    .map((tag, idx) => (
-                      <Chip key={idx} label={tag} size="small" />
-                    ))}
-              </Stack>
+                  tags.split(",").map((tag, idx) => (
+                    <Tooltip title={tag} arrow>
+                      <Chip
+                        key={idx}
+                        label={tag}
+                        size="small"
+                        onClick={() => navigate(`tags/${tag}`)}
+                        sx={{
+                          maxWidth: "100px",
+                          marginRight: "0.25rem",
+                          marginBottom: "0.5rem",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      />
+                    </Tooltip>
+                  ))}
+              </Box>
             </Box>
           </Stack>
         </Stack>

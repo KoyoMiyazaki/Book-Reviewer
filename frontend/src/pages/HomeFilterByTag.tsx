@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Add, Close, Twitter } from "@mui/icons-material";
 import axios, { AxiosError } from "axios";
 import { StatusCodes } from "http-status-codes";
@@ -28,7 +28,7 @@ import { logout } from "../slices/authSlice";
 import { useAppDispatch, useAppSelector } from "../util/hooks";
 import { Review, Status } from "../util/types";
 
-const Home = () => {
+const HomeFilterByTag = () => {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedReview, setSelectedReview] = useState<Review>({
     id: -1,
@@ -53,18 +53,22 @@ const Home = () => {
   const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { tagName } = useParams();
 
   const getReviews = async () => {
     const token: string | null = localStorage.getItem("jwtToken");
     try {
-      const res = await axios.get("http://localhost:8080/review/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        params: {
-          page: currentPage,
-        },
-      });
+      const res = await axios.get(
+        `http://localhost:8080/review/tags/${tagName}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            page: currentPage,
+          },
+        }
+      );
       const { items, totalPages } = await res.data.data;
       setReviews(items ? items : []);
       setTotalPages(totalPages ? totalPages : 1);
@@ -213,7 +217,7 @@ const Home = () => {
         <Title title="レビューしたい書籍を検索してみよう！" />
       ) : (
         <Box>
-          <Title title="レビュー一覧" />
+          <Title title={`タグ: ${tagName}`} />
           <Grid container spacing={2} marginTop="1rem">
             {reviews.map((review) => {
               return (
@@ -539,4 +543,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeFilterByTag;
