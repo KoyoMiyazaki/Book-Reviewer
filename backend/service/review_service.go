@@ -465,6 +465,85 @@ func (s Service) GetReviewStats(c *gin.Context) (GetReviewStatsResponse, StatusC
 	return getReviewStatsResponse, http.StatusOK, nil
 }
 
+// タグ名によるレビューフィルタリング用サービス
+func (s Service) FilterReviewByTag(c *gin.Context) (GetReviewsResponse, StatusCode, error) {
+	db := db.GetDB()
+	var user User
+	var results []entity.ResponseReview
+
+	// JWTトークン検証
+	authHeader := c.Request.Header.Get("Authorization")
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	token, statusCode, err := s.VerifyToken(tokenString)
+	if err != nil {
+		return GetReviewsResponse{}, statusCode, err
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok || !token.Valid {
+		return GetReviewsResponse{}, http.StatusForbidden, err
+	}
+
+	// メールアドレスをキーに、ユーザを取得
+	if err := db.Where("email = ?", claims["email"]).First(&user).Error; err != nil {
+		return GetReviewsResponse{}, http.StatusNotFound, err
+	}
+
+	// ページパラメータ取得、指定されてない場合は1を設定
+	var page int
+	if c.Query("page") == "" {
+		page = 1
+	} else {
+		page, err = strconv.Atoi(c.Query("page"))
+		if err != nil {
+			return GetReviewsResponse{}, http.StatusBadRequest, err
+		}
+	}
+
+	tagName := c.Param("tagName")
+
+	// ユーザID、タグ名をキーに、レビューを取得
+	if err := db.Model(&Review{}).Select("reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages, to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at, to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at, reviews.tags, books.title as book_title, books.author as book_author, books.thumbnail_link as book_thumbnail_link, books.published_date as book_published_date, books.num_of_pages as book_num_of_pages").Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? AND reviews.tags ILIKE ?", user.ID, fmt.Sprintf("%%%s%%", tagName)).Order("reviews.updated_at desc").Limit(10).Offset(10 * (page - 1)).Scan(&results).Error; err != nil {
+		// SELECT reviews.id, reviews.comment, reviews.rating, reviews.reading_status, reviews.read_pages,
+		//   to_char(reviews.start_read_at, 'YYYY-MM-DD') as start_read_at,
+		//   to_char(reviews.finish_read_at, 'YYYY-MM-DD') as finish_read_at,
+		//   reviews.tags,
+		//   books.title as book_title, books.author as book_author,
+		//   books.thumbnail_link as book_thumbnail_link,
+		//   books.published_date as book_published_date,
+		//   books.num_of_pages as book_num_of_pages
+		// FROM `reviews` join `books` on reviews.book_id = books.id
+		// WHERE reviews.user_id = user.ID AND reviews.tags ILIKE %[tagName]%
+		// ORDER BY reviews.updated_at DESC
+		// LIMIT 10 OFFSET [10 * (page-1)]
+		return GetReviewsResponse{}, http.StatusNotFound, err
+	}
+	// 読書開始日、完了日が0001-01-01の場合は空文字を格納する
+	for i := range results {
+		results[i].StartReadAt = timeStrCoalesce(results[i].StartReadAt, "")
+		results[i].FinishReadAt = timeStrCoalesce(results[i].FinishReadAt, "")
+	}
+
+	// レビューの総件数を取得
+	var totalRows int64
+	if err := db.Model(&Review{}).Joins("join books on reviews.book_id = books.id").Where("reviews.user_id = ? AND reviews.tags ILIKE ?", user.ID, fmt.Sprintf("%%%s%%", tagName)).Count(&totalRows).Error; err != nil {
+		// SELECT count(1)
+		// FROM `reviews` join `books` on reviews.book_id = books.id
+		// WHERE reviews.user_id = user.ID AND reviews.tags ILIKE %[tagName]%
+		return GetReviewsResponse{}, http.StatusNotFound, err
+	}
+
+	// レスポンス用データ生成
+	getReviewsResponse := GetReviewsResponse{
+		ResponseReviews: results,
+		TotalPages:      totalRows/10 + 1,
+	}
+
+	return getReviewsResponse, http.StatusOK, nil
+}
+
 // 日付文字列が0001-01-01の場合はデフォルト値を、そうでない場合は元の値を返す
 func timeStrCoalesce(timeStrArg, defaultTimeStr string) string {
 	if timeStrArg != "0001-01-01" {
